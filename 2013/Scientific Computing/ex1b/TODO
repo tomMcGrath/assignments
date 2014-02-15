@@ -1,0 +1,41 @@
+To do:
+q1:
+- basic code DONE
+- write makefile DONE
+- improve quad_roots
+
+q2.
+- read q DONE
+- write function spec DONE
+- prove existence of >= 1 real root of cubic
+- write code for r DONE
+- write code for q DONE
+- write rcubic_roots
+- write testing program
+- get test cases
+- test
+
+q3.
+- special case 1
+- special case 2
+- special case 3
+- special case 4
+- special case 5
+- special case 6
+- special case 7
+
+q4.
+- write handler case for VdW equation
+- make columns align
+- put results into spreadsheet
+
+q5.
+- type out program
+- explain use
+- add to current files
+
+MQ.
+- read about Newton's method
+- implement
+- write problem-specific handler program
+- plot

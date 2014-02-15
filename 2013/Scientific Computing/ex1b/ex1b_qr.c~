@@ -1,0 +1,24 @@
+#include<stdio.h>
+#include<float.h>
+#include<math.h>
+
+int lin_root(double, double, double*);
+
+int main(void) {
+	double t1;
+	double a2,a1, a0;
+	printf("Name: <Tom McGrath>\n");
+	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+	printf("Course Code: <M5SC>\n");
+}
+
+int lin_root(double A, double B, double *r1);{
+	if (A == 0 && B == 0){
+		return(-1); // any x will satisfy this
+	} else if (A == 0 && B != 0){
+		return(0); // no x will satisfy this
+	} else if (A != 0 && B != 0){
+		*r1 = -B/A;
+		return(1);
+}

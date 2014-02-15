@@ -1,0 +1,50 @@
+\begin{thebibliography}{10}
+
+\bibitem{mackay_information_2003}
+{MacKay}, D.~J.
+\newblock {\em Information theory, inference and learning algorithms}.
+\newblock Cambridge university press,  (2003).
+
+\bibitem{landauer_irreversibility_2000}
+Landauer, R.
+\newblock {\em {IBM} Journal of Research and Development}{ \bf 44}(1.2),
+  261–269 (2000).
+
+\bibitem{novotny_tutorial_2001}
+Novotny, M.~A.
+\newblock {\em {arXiv} preprint cond-mat/0109182}{ \bf } (2001).
+
+\bibitem{sontag_mathematical_1998}
+Sontag, E.~D.
+\newblock {\em Mathematical control theory: deterministic finite dimensional
+  systems}, volume~6.
+\newblock Springer,  (1998).
+
+\bibitem{controllability}
+Xia, H.
+\newblock  (1995).
+
+\bibitem{ott_paper_1996}
+Ott, E., Grebogi, C., and Yorke, J.~A.
+\newblock {\em Controlling chaos: theoretical and practical methods in
+  non-linear dynamics}{ \bf }, 77 (1996).
+
+\bibitem{bechhoefer_feedback_2005}
+Bechhoefer, J.
+\newblock {\em Reviews of Modern Physics}{ \bf 77}(3), 783 (2005).
+
+\bibitem{astrom_feedback_2010}
+Aström, K.~J. and Murray, R.~M.
+\newblock {\em Feedback systems: an introduction for scientists and engineers}.
+\newblock Princeton university press,  (2010).
+
+\bibitem{todorov2006optimal}
+Todorov, E.
+\newblock {\em Bayesian brain: probabilistic approaches to neural coding}{ \bf
+  }, 269--298 (2006).
+
+\bibitem{kacser_molecular_1979}
+Kacser, H., Burns, J., et~al.
+\newblock {\em Biochem. Soc. Trans}{ \bf 7}(1), 149–1 (1979).
+
+\end{thebibliography}

@@ -1,0 +1,487 @@
+Using gcc 4.8.1 on Ubuntu
+
+q1.
+Source code at end of file. 
+I've included versions of each function in line with the improvements suggested in each section. For the final quad_roots function, see the source for q4.
+
+q2.
+Source code at end of file.
+I generated these values switching between float & double datatypes using #define at the start of the code. I've reformatted into columns for easier reading.
+
+Earth				
+d 	 	h (acc, dbl) 	h (inacc, dbl)	h (acc, float) 	h (inacc, float)
+1		7.84806153E-008	7.82310968E-008	7.84806176E-008	0.1535708606
+10000		0.0007848062	0.000784806	0.0007848062	0.1535708606
+1000000		0.0784806148	0.0784806143	0.0784806162	0.1535708606
+10000000000	784.757820998	784.757820998	784.7578125	784.850219727
+			
+Moon				
+d 	 	h (acc, dbl) 	h (inacc, dbl)	h (acc, float) 	h (inacc, float)
+1		2.87836049E-007	2.87778676E-007	2.87836059E-007	0.0303171947
+10000		0.0028783605	0.0028783605	0.0028783605	0.0303171948
+1000000		0.2878360247	0.2878360248	0.2878360152	0.3321351409
+10000000000	2875.97971926	2875.97971926	2875.97973633	2876.01196289
+
+q3.
+There is no question 3. (Bruce?)
+
+q4.
+Source code at end of file.
+Compilers on MLC computer:
+gcc in MinGW
+Intel compiler in Visual Studio
+MS compiler in Visual Studio
+MATLAB will almost certainly have one as it can compile to C, likewise Python for Cython extensions, but I haven't confirmed that these are different.
+Eclipse and NetBeans will also include compilers.
+
+I don't have a running C compiler on my phone, but floating point standards for Android will depend on the compiler used - the Android Google Code repo lists a number of compilers, including many versions of gcc targeting different hardware/OS combinations. (search for platform/prebuilts on https://android.googlesource.com/?format=HTML)
+
+From writing a short program (below) to access the values for DBL & LDBL (again on gcc 4.8):
+DBL_EPSILON = 2.2204460493e-16
+DBL_MAX = 1.7976931349e+308
+DBL_MIN = 2.2250738585e-308
+LDBL_EPSILON = 1.0842021725e-19
+LDBL_MAX = 1.1897314954e+4932
+LDBL_MIN = 3.3621031431e-4932
+
+Code accounting for floating point overflow in quad_roots is at the end of the file on q4.b. This is the final version of quad_roots I'd like using to generate my answers.
+
+From quadmath.h on gcc 4.8, FLT128 values are:
+#define FLT128_MAX 1.18973149535723176508575932662800702e4932Q
+#define FLT128_MIN 3.36210314311209350626267781732175260e-4932Q
+#define FLT128_EPSILON 1.92592994438723585305597794258492732e-34Q
+
+Mastery question:
+Source is at end of file.
+Solution plot is attached to email as complex_roots.jpg
+
+---
+Source begins
+
+q1.
+#include<stdio.h>
+#include<math.h>
+
+int quad_roots(double, double , double, double*, double*);
+
+int main(void)
+{
+	double t1;
+	double t2;
+	double a2,a1, a0;
+	printf("Name: <Tom McGrath>\n");
+	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+	printf("Course Code: <M5SC>\n");
+}
+
+int quad_roots(double a2, double a1, double a0, double* r1, double* r2)
+{
+	double disc;
+	int four, two;
+	four = 4;
+	two = 2;
+
+	if(a2 == 0 && a1 != 0)
+	{
+		printf("Linear equation %lfx + %lf = 0 has root x = %lf\n", a1, a0, -(a0/a1));		
+		return(1); // linear equation has 1 real root
+	}
+	else if (a2== 0 && a1 == 0)
+	{
+		printf("Equation is poorly specified, either have a0 = 0 or 0=0\n");
+		return(0); // no roots, either have 0==0 (a0 = 0) or a0==0 (inconsistent)
+	}
+	
+	else
+	{
+		disc = a1*a1 - four*a2*a0;
+		if(disc == 0)
+		{
+			// handle 2 equal real roots
+			*r1 = -(a1)/(two*a2);
+			*r2 = -(a1)/(two*a2);
+			return(1);
+		}
+		else if(disc > 0)
+		{
+			// handle 2 distinct real roots
+			*r1 = (-a1 + sqrt(disc))/(two*a2);
+			*r2 = (-a1 - sqrt(disc))/(two*a2);
+			return(2);
+		}
+		else if(disc < 0)
+		{
+			// handle complex conjugate roots
+			printf("Quadratic equation %lfx^2 + %lf x + %lf = 0 has 2 complex roots\n", a2, a1, a0);
+			return(0); // we want _real_ roots
+		}
+		else
+		{
+			printf("Flow control error"); // we should never get here
+			return(-3);
+		}	
+	}	
+}
+
+q2.
+#include<stdio.h>
+#include<math.h>
+#define double float
+
+
+int quad_roots(double, double , double, double*, double*);
+int quad_roots_inaccurate(double, double , double, double*, double*);
+
+
+int main(void)
+{
+	double t1, t2;
+	double t3, t4;
+	double a2,a1, a0;
+	double diam_E = 12742000; // Earth's diameter in metres, because we're using 2R in the formula
+	double diam_M = 3474200; // Moon's diameter in metres
+	printf("Name: <Tom McGrath>\n");
+	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+	printf("Course Code: <M5SC>\n");
+	printf("A camera must be at height h above the Earth's surface to see a horizon at distance d\n");
+	printf("d \t h (acccurate) \t h (inaccurate)\n");
+
+	quad_roots(1, diam_E, -1, &t1, &t2);
+	quad_roots_inaccurate(1, diam_E, -1, &t3, &t4);
+	printf("%11d \t %10.12g \t %10.12g\n", 1, t1, t3);
+
+	quad_roots(1, diam_E, -10000, &t1, &t2); // remember d^2
+	quad_roots_inaccurate(1, diam_E, -10000, &t3, &t4);
+	printf("%11d \t %10.12g \t %10.12g\n", 10000, t1, t3);
+
+	quad_roots(1, diam_E, -1000000, &t1, &t2);
+	quad_roots_inaccurate(1, diam_E, -1000000, &t3, &t4);
+	printf("%11d \t %10.12g \t %10.12g\n", 1000000, t1, t3);
+
+	quad_roots(1, diam_E, -10000000000, &t1, &t2);
+	quad_roots_inaccurate(1, diam_E, -10000000000, &t3, &t4);
+	printf("%11ld \t %10.12g \t %10.12g\n", 10000000000, t1, t3);
+
+	printf("A camera must be at height h above the Moon's surface to see a horizon at distance d\n");
+	printf("d \t h (accurate) \t h (inaccurate)\n");
+	quad_roots(1, diam_M, -1, &t1, &t2);
+	quad_roots_inaccurate(1, diam_M, -1, &t3, &t4);
+	printf("%11d \t %10.12g \t %10.12g\n", 1, t1, t3);
+
+	quad_roots(1, diam_M, -10000, &t1, &t2); // remember d^2
+	quad_roots_inaccurate(1, diam_M, -10000, &t3, &t4);
+	printf("%11d \t %10.12g \t %10.12g\n", 10000, t1, t3);
+
+	quad_roots(1, diam_M, -1000000, &t1, &t2);
+	quad_roots_inaccurate(1, diam_M, -1000000, &t3, &t4);
+	printf("%11d \t %10.12g \t %10.12g\n", 1000000, t1, t3);
+
+	quad_roots(1, diam_M, -10000000000, &t1, &t2);
+	quad_roots_inaccurate(1, diam_M, -10000000000, &t3, &t4);
+	printf("%11ld \t %10.12g \t %10.12g\n", 10000000000, t1, t3);
+}
+
+int quad_roots(double a2, double a1, double a0, double* r1, double* r2)
+{
+	double disc;
+	int four, two;
+	four = 4;
+	two = 2;
+
+	if(a2 == 0 && a1 != 0)
+	{		
+		return(1); // linear equation has 1 real root
+	}
+	else if (a2== 0 && a1 == 0)
+	{
+		return(0); // no roots, either have 0==0 (a0 = 0) or a0==0 (inconsistent)
+	}
+	
+	else
+	{
+		disc = a1*a1 - four*a2*a0;
+		if(disc == 0)
+		{
+			// handle 2 equal real roots
+			*r1 = -(a1)/(two*a2);
+			*r2 = -(a1)/(two*a2);
+			return(1);
+		}
+		else if(disc > 0)
+		{
+			// handle 2 distinct real roots
+			if(a1 > 0)
+			{			
+				*r2 = (-a1 - sqrt(disc))/(two*a2); // avoid loss of significance by subtracting different signs
+				*r1 = (a0)/(*r2*a2);
+				return(2);
+			}
+			else if (a1 <= 0)
+			{
+				*r1 = (-a1 + sqrt(disc))/(two*a2); // we need to calculate the other root first this time
+				*r2 = (a0)/(*r1*a2);
+				return(2);
+			}
+		}
+		else if(disc < 0)
+		{
+			// handle complex conjugate roots
+			return(0); // we want _real_ roots
+		}
+		else
+		{
+			printf("You have a problem!"); // we should never get here
+		}
+	}	
+}
+
+int quad_roots_inaccurate(double a2, double a1, double a0, double* r1, double* r2)
+{
+	double disc;
+	int four, two;
+	four = 4;
+	two = 2;
+
+	if(a2 == 0 && a1 != 0)
+	{
+		printf("Linear equation %lfx + %lf = 0 has root x = %lf\n", a1, a0, -(a0/a1));		
+		return(1); // linear equation has 1 real root
+	}
+	else if (a2== 0 && a1 == 0)
+	{
+		printf("Equation is poorly specified, either have a0 = 0 or 0=0\n");
+		return(0); // no roots, either have 0==0 (a0 = 0) or a0==0 (inconsistent)
+	}
+	
+	else
+	{
+		disc = a1*a1 - four*a2*a0;
+		if(disc == 0)
+		{
+			// handle 2 equal real roots
+			*r1 = -(a1)/(two*a2);
+			*r2 = -(a1)/(two*a2);
+			return(1);
+		}
+		else if(disc > 0)
+		{
+			// handle 2 distinct real roots
+			*r1 = (-a1 + sqrt(disc))/(two*a2);
+			*r2 = (-a1 - sqrt(disc))/(two*a2);
+			return(2);
+		}
+		else if(disc < 0)
+		{
+			// handle complex conjugate roots
+			printf("Quadratic equation %lfx^2 + %lf x + %lf = 0 has 2 complex roots\n", a2, a1, a0);
+			return(0); // we want _real_ roots
+		}
+		else
+		{
+			printf("Flow control error"); // we should never get here
+			return(-3);
+		}	
+	}	
+}
+
+q4.a.
+#include <stdio.h>
+#include <float.h>
+#include <quadmath.h>
+
+int main(void)
+{
+	double a1 = DBL_MAX;
+	double a2;
+	printf("Name: <Tom McGrath>\n");
+	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+	printf("Course Code: <M5SC>\n");
+	printf("DBL_EPSILON = %.10e\n", DBL_EPSILON);
+	printf("DBL_MAX = %.10e\n", DBL_MAX);
+	printf("DBL_MIN = %.10e\n", DBL_MIN);
+	printf("LDBL_EPSILON = %.10Le\n", LDBL_EPSILON);
+	printf("LDBL_MAX = %.10Le\n", LDBL_MAX);
+	printf("LDBL_MIN = %.10Le\n", LDBL_MIN);
+	printf("%.10g\n", a1);
+	return(0);
+}
+
+b. Use this quad_roots to generate answers please.
+#include<stdio.h>
+#include<float.h>
+#include<math.h>
+
+int quad_roots(double, double , double, double*, double*);
+
+int main(void) {
+	double t1;
+	double t2;
+	double a2,a1, a0;
+	printf("Name: <Tom McGrath>\n");
+	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+	printf("Course Code: <M5SC>\n");
+}
+
+int quad_roots(double a2, double a1, double a0, double* r1, double* r2) {
+	double disc, d_div_a0, d_div_a1;
+	double lrg_arg1, lrg_arg2;
+	double maxval = DBL_MAX;
+	int four, two;
+	four = 4;
+	two = 2;
+	if (a2 == 0 && a1 != 0) {		
+		return(-1); // linear equation has 1 real root
+	} else if (a2== 0 && a1 == 0) {
+		return(0); // no roots, either have 0==0 (a0 = 0) or a0==0 (inconsistent)
+	} else {
+		if (a1 > sqrt(maxval) && (a2 > maxval/a0 || a0 > maxval/a2)) {
+			// divide through by one of the arguments (largest?) and go again
+			//printf("All arguments too large, dividing\n");		
+			lrg_arg1 = fmax(a2, a1);
+			lrg_arg2 = fmax(lrg_arg1, a0);
+			a2 = a2/lrg_arg2;
+			a1 = a1/lrg_arg2;
+			a0 = a0/lrg_arg2;
+			disc = a1*a1 - four*a2*a0;
+		} else if (a1 > sqrt(maxval))	{
+			// re-form discriminant avoiding a1*a1
+			//printf("a1*a1 too large, dividing disc by a1 first\n");
+			d_div_a1 = a1 - four*(a2*a0/a1);
+			disc = d_div_a1 * a1;
+		} else if (a2 > maxval/a0 || a0 > maxval/a2) {
+			// re-form discriminant avoiding a2*a0
+			//printf("a0 or a2 too large, dividing disc by a0 first\n");
+			d_div_a0 = ((a1*a1)/a0) - four*a2;
+			disc = d_div_a0*a0;
+		} else {
+			//printf("arguments fine, proceeding\n");
+			disc = a1*a1 - four*a2*a0;
+		}		
+	} // so now we have disc, just do the calculation
+	if (disc == 0) {
+		// handle 2 equal real roots
+		*r1 = -(a1)/(two*a2);
+		*r2 = -(a1)/(two*a2);
+		return(1);
+	} else if (disc > 0) {
+	// handle 2 distinct real roots
+		if(a1 > 0) {			
+			*r2 = (-a1 - sqrt(disc))/(two*a2); // avoid loss of significance by subtracting different signs
+			*r1 = (a0)/(*r2*a2);
+			return(2);
+		} else if (a1 <= 0) {
+			*r1 = (-a1 + sqrt(disc))/(two*a2); // we need to calculate the other root first this time
+			*r2 = (a0)/(*r1*a2);
+			return(2);
+		}
+	} else if (disc < 0) {
+		// handle complex conjugate roots
+		return(-2); // we want _real_ roots
+	} else {
+		//printf("You have a problem!\n"); // we should never get here
+		return(-3);
+	}	
+}
+
+Mastery question:
+#include<stdio.h>
+#include<float.h>
+#include<math.h>
+#include<complex.h>
+
+int complex_roots(double complex, double complex, double complex, double complex*, double complex*);
+
+int main(void) {
+	double complex t1;
+	double complex t2;
+	double complex a2,a1,a0;
+	int j;
+	printf("Name: <Tom McGrath>\n");
+	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+	printf("Course Code: <M5SC>\n");
+	for(j = 0; j<= 80; j = j+1){
+		double complex z_j;
+		if (j/40.0 == 0){ // catch some imprecision errors that would make z_j complex when it should be real or imaginary
+			z_j = 1 + I*0;
+		} else if (j == 40){ // I admit that doing this case by case is a bit of a bodge
+			z_j = -1 + I*0;
+		} else if (j == 80){
+			z_j = 1 + I*0;
+		} else if (j == 20){
+			z_j = 0 + I*1;
+		} else if (j == 60){
+			z_j = 0 + I*-1;
+		} else {
+			z_j = cos(((double)j*M_PI)/40.0) + sin(((double)j*M_PI)/40.0)*I;
+		}
+		complex_roots(12+0i, -9*z_j*z_j, (24*z_j - 8*z_j*z_j -12), &t1, &t2);
+		printf("%d \t %5g %5gi \t %5g %5gi\n", j, creal(t1), cimag(t1), creal(t2), cimag(t2));
+	}
+}
+
+int complex_roots(double complex a2, double complex a1, double complex a0, double complex* r1, double complex* r2){
+	double complex disc, d_div_a0, d_div_a1;
+	double complex lrg_arg1, lrg_arg2;
+	double maxval = DBL_MAX;
+	int four, two;
+	four = 4;
+	two = 2;
+
+	// debug prints:
+	/*printf("a2 %.10g \t maxval/a2 %.10g\n", a2, maxval/a2);
+	printf("a1 %.10g \t sqrt(maxval) %.10g\n", a1, sqrt(maxval));
+	printf("a0 %.10g \t maxval/a0 %.10g\n", a0, maxval/a0);*/
+
+	if (a2 == 0 && a1 != 0) {		
+		return(-1); // linear equation has 1 real root
+	} else if (a2== 0 && a1 == 0) {
+		return(0); // no roots, either have 0==0 (a0 = 0) or a0==0 (inconsistent)
+	} else {
+		if (cabs(a1) > sqrt(maxval) && (cabs(a2) > maxval/cabs(a0) || cabs(a0) > maxval/cabs(a2))) {
+			// divide through by one of the arguments (largest?) and go again
+			//printf("All arguments too large, dividing\n");		
+			lrg_arg1 = fmax(cabs(a2), cabs(a1));
+			lrg_arg2 = fmax(cabs(lrg_arg1), cabs(a0));
+			a2 = a2/lrg_arg2;
+			a1 = a1/lrg_arg2;
+			a0 = a0/lrg_arg2;
+			disc = a1*a1 - four*a2*a0;
+		} else if (cabs(a1) > sqrt(maxval))	{
+			// re-form discriminant avoiding a1*a1
+			//printf("a1*a1 too large, dividing disc by a1 first\n");
+			d_div_a1 = a1 - four*(a2*a0/a1);
+			disc = d_div_a1 * a1;
+		} else if (cabs(a2) > maxval/cabs(a0) || cabs(a0) > maxval/cabs(a2)) {
+			// re-form discriminant avoiding a2*a0
+			//printf("a0 or a2 too large, dividing disc by a0 first\n");
+			d_div_a0 = ((a1*a1)/a0) - four*a2;
+			disc = d_div_a0*a0;
+		} else {
+			//printf("arguments fine, proceeding\n");
+			disc = a1*a1 - four*a2*a0;
+		}		
+	} // so now we have disc, just do the calculation
+	if (cimag(disc) == 0 && cabs(disc) == 0) { // no imaginary component, discriminant == 0
+		// handle 2 equal real roots
+		*r1 = -(a1)/(two*a2);
+		*r2 = -(a1)/(two*a2);
+		return(1);
+	} else {
+	// we can now return distinct roots
+		if(cabs(a1) > 0) {			
+			*r2 = (-a1 - csqrt(disc))/(two*a2); // avoid loss of significance by subtracting different signs
+			*r1 = (a0)/(*r2*a2);
+			return(2);
+		} else if (cabs(a1) <= 0) {
+			*r1 = (-a1 + csqrt(disc))/(two*a2); // we need to calculate the other root first this time
+			*r2 = (a0)/(*r1*a2);
+			return(2);
+		}
+	}	
+}
+
