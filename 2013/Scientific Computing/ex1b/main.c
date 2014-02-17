@@ -10,10 +10,6 @@ int main(void) {
 	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
 	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
 	printf("Course Code: <M5SC>\n");
-	printf("absval(-9.0585) = %g\n", absval(-9.0585));
-	printf("%e\n", max(max(1e+308, 1e-308),max(0, 1e-308)));
-	test = 3.14159*3.14159 - 4.0*2.71828*0.907706;
-	printf("test: %lf\n %.5g\n", test, test);
 	printf("Enter reduced cubic root coeffs a2 a1 a0\n");
 	scanf("%lf %lf %lf", &a2, &a1, &a0);
 	rcubic_roots(a2, a1, a0, &t1, &t2, &t3);
