@@ -1,0 +1,52 @@
+#include<complex.h>
+#include<math.h>
+#include<float.h>
+#include<stdio.h>
+#include"header.h"
+
+int quad_roots(double complex a2, double complex a1, double complex a0, double* complex r1, double* complex r2) {
+	double q, a_range, disc;
+	a_range = max(max(a2,a1),max(a1,a0)) - min(min(a2,a1),min(a1,a0)); // dividing through reduces risk of fp overflow
+	// DEBUG PRINTS
+	printf("max = %.5g\nmin = %.5g\n", max(max(a2,a1),max(a1,a0)), min(min(a2,a1),min(a1,a0)));
+	if (a_range < DBL_MAX){	
+		printf("Dividing by a_range = %.5g\n", a_range);
+		a2 = a2/sqrt(a_range);
+		a1 = a1/sqrt(a_range);
+		a0 = a0/sqrt(a_range);
+	}
+	// DEBUG PRINT
+	printf("a2 = %.5g\n a1 = %.5g\n a0 = %.5g\n", a2, a1, a0);
+
+	if (a2 == 0){ // linear equation case
+		lin_root(a1, a0, r1);
+		lin_root(a1, a0, r2);
+	} else if (a0 == 0) { // one root is zero
+		lin_root(a2, a1, r1);
+		*r2 = 0;
+	} else if (a1 == 0 && a0 < 0) { // x^2 = -c
+		*r1 = sqrt(-a0)/sqrt(a2);
+		*r2 = -sqrt(-a0)/sqrt(a2);
+	} else {
+		disc = a1*a1 - 4.0*a2*a0;
+		// DEBUG PRINT
+		printf("disc = %.5g\n", disc);
+		if (disc < 0){
+			*r1 = -a1/(2.0*a2);
+			*r2 = sqrt(-1.0*disc)/(2.0*a2);
+		} else if (disc > 0){
+			if (a1 > 0){
+				q = -0.5*(a1 + sqrt(disc));
+			} else {
+				q = -0.5*(a1 - sqrt(disc));
+			}
+			// DEBUG PRINT
+			printf("q = %.5g\n", q);	
+			*r1 = a0/q;
+			*r2 = q/a2;		
+		} else if (disc == 0){
+			*r1 = -a1/(2.0*a2);
+			*r2 = -a1/(2.0*a2);
+		}
+	}
+}

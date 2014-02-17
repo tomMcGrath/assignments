@@ -1,6 +1,10 @@
 int lin_root(double, double, double*);
 int quad_roots(double, double , double, double*, double*);
 int rcubic_roots(double, double, double, double*, double*, double*);
+//int complex_quad(complex double, complex double, complex double, complex double*, complex double*);
+//int complex_cubic(complex double, complex double, complex double, complex double*, complex double*, complex double*);
+//int complex_quad(double complex, double complex, double complex, double* complex, double* complex);
+//int complex_cubic(double complex, double complex, double complex, double* complex, double* complex, double* complex);
 double calcQ(double, double);
 double calcR(double, double, double);
 double max(double, double);

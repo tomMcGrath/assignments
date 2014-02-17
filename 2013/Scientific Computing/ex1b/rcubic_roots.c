@@ -1,4 +1,5 @@
 #include<math.h>
+#include<float.h>
 #include<stdio.h>
 #include"header.h"
 
@@ -53,7 +54,7 @@ int rcubic_roots(double a2, double a1, double a0, double *r1, double *r2, double
 		root_1 = pow(absval(-2.0*r), 1.0/3.0) - (a2/3.0);
 		root_2 = pow(absval(-2.0*r), 1.0/3.0)*(1.0/2.0) - (a2/3.0);
 		root_3 = pow(absval(-2.0*r), 1.0/3.0)*(sqrt(3.0)/2.0);
-	} else if (q*q*q == r*r){ // special case vii
+	} else if (q*q*q < DBL_MAX && r*r < DBL_MAX && q*q*q == r*r){ // special case vii
 		printf("case vii\n");
 		root_1 = sqrt(q) - (a2/3.0);
 		root_2 = sqrt(q) - (a2/3.0);
