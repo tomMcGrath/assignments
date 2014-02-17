@@ -2,7 +2,7 @@ To do:
 q1:
 - basic code DONE
 - write makefile DONE
-- improve quad_roots
+- improve quad_roots DONE
 
 q2.
 - read q DONE
@@ -10,19 +10,20 @@ q2.
 - prove existence of >= 1 real root of cubic
 - write code for r DONE
 - write code for q DONE
-- write rcubic_roots
+- write rcubic_roots DONE
 - write testing program
-- get test cases
-- test
+- get test cases DONE
+- test DONE
 
 q3.
-- special case 1
-- special case 2
-- special case 3
-- special case 4
-- special case 5
-- special case 6
-- special case 7
+- special case 1 DONE
+- special case 2 DONE
+- special case 3 DONE
+- special case 4 DONE
+- special case 5 DONE
+- special case 6 DONE
+- special case 7 DONE
+- reorder roots outputting
 
 q4.
 - write handler case for VdW equation
