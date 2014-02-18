@@ -106,12 +106,14 @@ int rcubic_roots(double a2, double a1, double a0, double *r1, double *r2, double
 
 double calcQ(double a2, double a1){
 	double qVal;
-	qVal = (a2*a2 - 3.*a1)/9.;
+	//qVal = (a2*a2 - 3.*a1)/9.;
+	qVal = (a2/3.0)*(a2/3.0) - a1/3.0;
 	return(qVal);
 }
 
 double calcR(double a2, double a1, double a0){
 	double rVal;
-	rVal = (2.*a2*a2*a2 - 9.*a1*a2 + 27.*a0)/54.;
+	//rVal = (2.*a2*a2*a2 - 9.*a1*a2 + 27.*a0)/54.;
+	rVal = a2*((a2/3.0)*(a2/3.0)*(1/3.0) - (a1/6.0)) + a0/2.0;
 	return(rVal);
 }

@@ -82,7 +82,7 @@ int rcubic_roots(double a2, double a1, double a0, double *r1, double *r2, double
 			*r1 = (-absval(r)/r)*(pow(sqrt(-q3_r2) + absval(r), 1.0/3.0) + q/(pow(sqrt(r*r - q*q*q) + absval(r), 1.0/3.0))) - a2/3.0;
 			printf("First root: %g\n", *r1);
 			b1 = a2 + *r1;
-			b0 = -1.0*a0/(*r1;)
+			b0 = -1.0*a0/(*r1);
 			printf("b1 = %g\nb0 = %g\n", b1, b0);
 			quad_roots(1.0, b1, b0, r2, r3);
 			return(1);
