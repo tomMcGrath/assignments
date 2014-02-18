@@ -18,5 +18,5 @@ int complex_cubic(double complex a2, double complex a1, double complex a0, doubl
 	*r1 = z;
 	b1 = a2 + z;
 	b0 = -1.0*a0/z;
-	complex_quad(1.0, b1, b0, r2, r3);
+	return(complex_quad(1.0, b1, b0, r2, r3));
 }

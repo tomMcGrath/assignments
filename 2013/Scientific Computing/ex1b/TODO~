@@ -23,7 +23,8 @@ q3.
 - special case 5 DONE
 - special case 6 DONE
 - special case 7 DONE
-- reorder roots outputting
+- reorder roots outputting DONE
+- return values DONE
 
 q4.
 - write handler case for VdW equation
@@ -37,7 +38,7 @@ q5.
 
 MQ.
 - read about Newton's method DONE
-- complexify improved quadratic program
-- fix header file/makefile problems
+- complexify improved quadratic program DONE
+- fix header file/makefile problems DONE
 - write problem-specific handler program
 - plot

@@ -44,12 +44,15 @@ int quad_roots(double a2, double a1, double a0, double* r1, double* r2) {
 	} else if (a2 == 0){ // linear equation case
 		lin_root(a1, a0, r1);
 		lin_root(a1, a0, r2);
+		return(-1);
 	} else if (a0 == 0) { // one root is zero
 		lin_root(a2, a1, r1);
 		*r2 = 0;
+		return(2);
 	} else if (a1 == 0 && a0 < 0) { // x^2 = -c
 		*r1 = sqrt(-a0)/sqrt(a2);
 		*r2 = -sqrt(-a0)/sqrt(a2);
+		return(2);
 	} else {
 		disc = a1*a1 - 4.0*a2*a0;
 		// DEBUG PRINT
@@ -57,6 +60,7 @@ int quad_roots(double a2, double a1, double a0, double* r1, double* r2) {
 		if (disc < 0){
 			*r1 = -a1/(2.0*a2);
 			*r2 = sqrt(-1.0*disc)/(2.0*a2);
+			return(0);
 		} else if (disc > 0){
 			if (a1 > 0){
 				q = -0.5*(a1 + sqrt(disc));
@@ -66,10 +70,12 @@ int quad_roots(double a2, double a1, double a0, double* r1, double* r2) {
 			// DEBUG PRINT
 			printf("q = %.5g\n", q);	
 			*r1 = a0/q;
-			*r2 = q/a2;		
+			*r2 = q/a2;
+			return(2);
 		} else if (disc == 0){
 			*r1 = -a1/(2.0*a2);
 			*r2 = -a1/(2.0*a2);
+			return(1);
 		}
 	}
 }

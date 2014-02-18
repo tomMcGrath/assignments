@@ -9,4 +9,5 @@ double calcQ(double, double);
 double calcR(double, double, double);
 double max(double, double);
 double min(double, double);
+double mid(double, double, double);
 double absval(double);
