@@ -37,7 +37,7 @@ q5.
 
 MQ.
 - read about Newton's method DONE
-- complexify improved quadratic program
-- fix header file/makefile problems
+- complexify improved quadratic program DONE
+- fix header file/makefile problems DONE
 - write problem-specific handler program
 - plot

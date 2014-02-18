@@ -2,17 +2,7 @@
 #include<math.h>
 #include<float.h>
 #include<stdio.h>
-
-int complex_cubic(double complex, double complex, double complex, double complex*, double complex*, double complex*);
-
-int main(void) {
-	double complex t1, t2, t3;
-	double complex a2, a1, a0;
-	a2 = 7.0 + 1.0*I;
-	a1 = 1.0 + 0.5*I;
-	a0 = 94.0 + 1000.0*I;
-	complex_cubic(a2,a1,a0,&t1,&t2,&t3);
-}
+#include"header.h"
 
 int complex_cubic(double complex a2, double complex a1, double complex a0, double complex* r1, double complex* r2, double complex* r3){
 	int i, num_iter;

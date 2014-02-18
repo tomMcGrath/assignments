@@ -9,8 +9,8 @@ int complex_roots(double complex a2, double complex a1, double complex a0, doubl
 	double complex a_range, lrg_arg1, lrg_arg2;
 	double maxval = DBL_MAX;
 	int four, two;
-	four = 4;
-	two = 2;
+	four = 4.0;
+	two = 2.0;
 
 	// debug prints:
 	/*printf("a2 %.10g \t maxval/a2 %.10g\n", a2, maxval/a2);

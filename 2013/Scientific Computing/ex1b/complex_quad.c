@@ -4,7 +4,7 @@
 #include<stdio.h>
 #include"header.h"
 
-int complex_roots(double complex a2, double complex a1, double complex a0, double complex* r1, double complex* r2){
+int complex_quad(double complex a2, double complex a1, double complex a0, double complex* r1, double complex* r2){
 	double complex disc, d_div_a0, d_div_a1;
 	double complex a_range, lrg_arg1, lrg_arg2;
 	double maxval = DBL_MAX;

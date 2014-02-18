@@ -36,7 +36,8 @@ q5.
 - add to current files
 
 MQ.
-- read about Newton's method
-- implement
+- read about Newton's method DONE
+- complexify improved quadratic program
+- fix header file/makefile problems
 - write problem-specific handler program
 - plot
