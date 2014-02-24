@@ -1,0 +1,29 @@
+To do:
+q1.
+i. Add array arg parsing & returning to lin_root DONE
+ii. Same for quad_roots
+iii. Same for rcubic_roots
+
+q2.
+i. Read Maple quartic guide sheet
+ii. Write quartic -> cubic code
+iii. Solve for pair of quads
+iv. Write improvement cases
+
+q3.
+i. Derive ellipse equation
+ii. Rearrange quartic
+iii. Calculate t and phi
+iv. Plot results
+
+q4.
+i. Calculate height above surface
+ii. Calculate geodetic latitude
+iii. Do calculations for new position
+
+MQ.
+i. Show C1 = c, C0 = 0
+ii. Write variable size array recurrence code using notes
+iii. Run for cases
+iv. Explain results
+v. Do for float & long double

@@ -1,0 +1,45 @@
+#include<stdio.h>
+#include<math.h>
+#include"header.h"
+
+double max(double v1, double v2){
+	if (v1 < v2){
+		return(v2);
+	} else if (v1 > v2) {
+		return(v1);
+	} else {
+		return(v1);
+	}
+}
+
+double min(double v1, double v2){
+	if (v1 > v2){
+		return(v2);
+	} else if (v1 < v2) {
+		return(v1);
+	} else {
+		return(v1);
+	}
+}
+
+double mid(double v1, double v2, double v3){
+	if (v1 < v2 && v2 < v3 || v3 < v2 && v2 < v1){
+		return(v2);
+	} else if (v2 < v1 && v1 < v3 || v3 < v1 && v1 < v2){
+		return(v1);
+	} else if (v1 < v3 && v3 < v2 || v2 < v3 && v3 < v1){
+		return(v3);
+	} else {
+		return(v1);
+	}
+}
+
+double absval(double v){
+	if (v > 0){
+		return(v);
+	} else if (v < 0){
+		return(-v);
+	} else if (v == 0){
+		return(0);
+	}
+}
