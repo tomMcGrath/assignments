@@ -8,9 +8,9 @@ q2.
 i. Read Maple quartic guide sheet DONE
 ii. Write quartic -> cubic code DONE
 iii. Solve for pair of quads DONE
-iv. Check return values & root ordering
-v. Write improvement cases
-vi. Any numerical accuracy improvements
+iv. Check return values & root ordering DONE
+v. Write improvement cases DONE
+vi. Update sign condition to actually work
 
 q3.
 i. Derive ellipse equation
