@@ -3,20 +3,6 @@
 #include<complex.h>
 #include"header.h"
 
-/*
-int main(void) {
-	double t1;
-	double a1, a0;
-	printf("Name: <Tom McGrath>\n");
-	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
-	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
-	printf("Course Code: <M5SC>\n");
-	scanf("%lf %lf", &a1, &a0);
-	lin_root(a1,a0,&t1);
-	printf("%e\n", t1);
-}
-*/
-
 int complex_lin_root(double complex A, double complex B, double complex *r1){
 	if (A == 0 && B == 0){
 		return(-1); // any x will satisfy this

@@ -5,10 +5,12 @@ ii. Same for quad_roots DONE
 iii. Same for rcubic_roots DONE
 
 q2.
-i. Read Maple quartic guide sheet
-ii. Write quartic -> cubic code
-iii. Solve for pair of quads
-iv. Write improvement cases
+i. Read Maple quartic guide sheet DONE
+ii. Write quartic -> cubic code DONE
+iii. Solve for pair of quads DONE
+iv. Check return values & root ordering
+v. Write improvement cases
+vi. Any numerical accuracy improvements
 
 q3.
 i. Derive ellipse equation

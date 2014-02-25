@@ -10,5 +10,8 @@ double calcQ(double, double);
 double calcR(double, double, double);
 double max(double, double);
 double min(double, double);
+int compare_dbl(const void *, const void *);
+double amax(double *, int);
+double amin(double *, int);
 double mid(double, double, double);
 double absval(double);

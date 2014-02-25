@@ -1,0 +1,768 @@
+Using gcc 4.8.1
+
+q1.
+quad_roots and lin_root code is at end of file.
+
+q2.
+rcubic_roots code is at end of file, along with minmax (code written to implement min, max and middle val of 3 values), header.h & makefile
+
+q3.
+Modified code at end of file (I've just included every modification in one go, rather than stage them. Comments should show which is which)
+iii. Assuming the cubic can be written in terms of these roots, we can expand (x+(-a1)^(1/2))(x-(-a1)^(1/2))(x+a2) to obtain x^3+a2*x^2+a1*x+a1a2 = 0, which is true when a1a2 = a0
+iv. Under these conditions q = 0 and 2r = -(a2/3)^3, so evaluating the cubic in y and then adding y = x + a2/3 gives us the result.
+vii. One root is found with the formula given on the sheet, but the resulting quadratic equation has no term in x, so gives 2 identical roots. By considering the derivative we can find:
+root1 = sqrt(q) - (a2/3.0)
+root2 = sqrt(q) - (a2/3.0)
+root3 = -1.0*a2 - 2.0*root_1
+
+q4.
+i. Values in table at end of file.
+ii. Graphs attached (T130, T140 & T150.jpg)
+iii. Using the condition for 3 equal roots: 3*a1 == a2^2 and a2^3 == 27*a0, we can obtain quadratic and cubic expressions for P in terms of T.
+Quadratic: beta^2*P^2 + (2RT*beta - 3*alpha)P + R^2*T^2 = 0
+Cubic: -27*alpha/beta = 1(beta + R*T/P)^3 (I won't attempt to expand this in a .txt file!)
+The intersection of these two curves gives the points at which there are 3 equal roots.
+
+q5.
+\234 is an excaped ASCII character in Octal representation. In my terminal is comes out as � but some googling suggests this is a Unicode issue (non UTF-8, expected UTF-8 character, or no Unicode representation specified)
+__TIME__ gives the time (surprisingly!) in form hh:mm:ss
+__DATE__ gives the date in form MMM DD YYYY
+
+MQ.
+Table at end of file.
+Code at end of file.
+
+---CODE---
+q1.
+#include<stdio.h>
+#include<math.h>
+#include"header.h"
+
+int lin_root(double A, double B, double *r1){
+	if (A == 0 && B == 0){
+		return(-1); // any x will satisfy this
+	} else if (A == 0 && B != 0){
+		return(0); // no x will satisfy this
+	} else if (A != 0 && B != 0){
+		*r1 = -B/A;
+		return(1);
+	}
+}
+
+#include<stdio.h>
+#include<math.h>
+#include<float.h>
+#include"header.h"
+
+int quad_roots(double a2, double a1, double a0, double* r1, double* r2) {
+	double q, a_range, disc, lrg_arg1, lrg_arg2;
+	double maxval = DBL_MAX;
+	a_range = max(max(a2,a1),max(a1,a0)) - min(min(a2,a1),min(a1,a0)); // dividing through reduces risk of fp overflow
+	// DEBUG PRINTS
+	//printf("max = %.5g\nmin = %.5g\n", max(max(a2,a1),max(a1,a0)), min(min(a2,a1),min(a1,a0)));
+	if (a_range < DBL_MAX && a_range > 1.0e+100){	
+		//printf("Dividing by a_range = %.5g\n", a_range);
+		a2 = a2/sqrt(a_range);
+		a1 = a1/sqrt(a_range);
+		a0 = a0/sqrt(a_range);
+	}
+	// DEBUG PRINT
+	//printf("a2 = %.5g\n a1 = %.5g\n a0 = %.5g\n", a2, a1, a0);
+	if (a1 > sqrt(maxval) && (a2 > maxval/a0 || a0 > maxval/a2)) {
+			// divide through by one of the arguments (largest?) and go again
+			//printf("All arguments too large, dividing\n");		
+			lrg_arg1 = fmax(a2, a1);
+			lrg_arg2 = fmax(lrg_arg1, a0);
+			a2 = a2/lrg_arg2;
+			a1 = a1/lrg_arg2;
+			a0 = a0/lrg_arg2;
+			disc = a1*a1 - 4.0*a2*a0;
+	} else if (a2 == 0){ // linear equation case
+		lin_root(a1, a0, r1);
+		lin_root(a1, a0, r2);
+		return(-1);
+	} else if (a0 == 0) { // one root is zero
+		lin_root(a2, a1, r1);
+		*r2 = 0;
+		return(2);
+	} else if (a1 == 0 && a0 < 0) { // x^2 = -c
+		*r1 = sqrt(-a0)/sqrt(a2);
+		*r2 = -sqrt(-a0)/sqrt(a2);
+		return(2);
+	} else {
+		disc = a1*a1 - 4.0*a2*a0;
+		// DEBUG PRINT
+		//printf("disc = %.5g\n", disc);
+		if (disc < 0){
+			*r1 = -a1/(2.0*a2);
+			*r2 = sqrt(-1.0*disc)/(2.0*a2);
+			return(0);
+		} else if (disc > 0){
+			if (a1 > 0){
+				q = -0.5*(a1 + sqrt(disc));
+			} else {
+				q = -0.5*(a1 - sqrt(disc));
+			}
+			// DEBUG PRINT
+			//printf("q = %.5g\n", q);	
+			*r1 = a0/q;
+			*r2 = q/a2;
+			return(2);
+		} else if (disc == 0){
+			*r1 = -a1/(2.0*a2);
+			*r2 = -a1/(2.0*a2);
+			return(1);
+		}
+	}
+}
+
+q2 & 3.
+#include<math.h>
+#include<float.h>
+#include<stdio.h>
+#include"header.h"
+
+int rcubic_roots(double a2, double a1, double a0, double *r1, double *r2, double *r3){
+	double q, r, q3_r2;
+	double root_1, root_2, root_3;
+	double b1, b0;
+	double y;
+	int rVal;
+	q = calcQ(a2, a1);
+	//printf("q: %g\n", q);
+	r = calcR(a2, a1, a0);
+	//printf("r: %g\n", r);
+	q3_r2 = q*q*q - r*r;
+	//printf("q3_r2: %g\n", q3_r2);
+	if (a2 == 0 && a1 == 0){ // special case i
+		//printf("case i\n");
+		*r1 = pow(absval(a0), 1.0/3.0);
+		*r2 = (-1.0/2.0)*pow(absval(a0), 1.0/3.0); // real part of complex root of unity
+		*r3 = (sqrt(3.0)/2.0)*pow(absval(a0), 1.0/3.0); // positive value of imaginary part
+		return(1);
+	} else if (a0 == 0){ // special case ii
+		//printf("case ii\n");
+		*r1 = 0;
+		rVal = quad_roots(1, a2, a1, r2, r3);
+		return(rVal);
+	} else if (a0 == a1*a2) { // special case iii
+		//printf("case iii\n");
+		root_1 = -1.0*a2;
+		if (a1 < 0){
+			root_2 = sqrt(-1.0*a1);
+			root_3 = -1.0*sqrt(-1.0*a1);
+			*r1 = min(min(root_1, root_2), min(root_2, root_3));
+			*r2 = mid(root_1, root_2, root_3);
+			*r3 = max(max(root_1, root_2), max(root_2, root_3));
+			return(3);
+		} else if (a1 > 0){
+			root_2 = 0; // there's no real part to the other roots
+			root_3 = sqrt(a1); // only complex root exists
+			return(1);
+		}
+	} else if (3.0*a1 == a2*a2){ // special case iv
+		//printf("case iv\n");		
+		*r1 = (-1.0/3.0)*a2;
+		*r2 = (-1.0/3.0)*a2;
+		*r3 = (-1.0/3.0)*a2;
+		return(2);
+	} else if (r == 0){ // special case v
+		//printf("case v\n");
+		if (q >= 0){
+			*r1 = -1.0*sqrt(3.0*q) - (1.0/3.0)*a2;
+			*r2 = (-1.0/3.0)*a2;
+			*r3 = sqrt(3.0*q) - (1.0/3.0)*a2;
+			return(3);
+		} else if (q < 0) {
+			*r1 = (-1.0/3.0)*a2;
+			*r2 = (-1.0/3.0)*a2;
+			*r3 = sqrt(-3.0*q);
+			return(1);
+		}
+	} else if (q == 0){ // special case vi
+		//printf("case vi\n");
+		*r1 = pow(absval(-2.0*r), 1.0/3.0) - (a2/3.0);
+		*r2 = pow(absval(-2.0*r), 1.0/3.0)*(1.0/2.0) - (a2/3.0);
+		*r3 = pow(absval(-2.0*r), 1.0/3.0)*(sqrt(3.0)/2.0);
+		return(1);
+	} else if (q*q*q < DBL_MAX && r*r < DBL_MAX && q*q*q == r*r){ // special case vii
+		//printf("case vii\n");
+		*r1 = sqrt(q) - (a2/3.0);
+		*r2 = sqrt(q) - (a2/3.0);
+		*r3 = -1.0*a2 - 2.0*root_1;
+		return(2);
+	} else {
+		//printf("general case\n");
+		if (q3_r2 < 0){
+			//handle 2 complex roots
+			//printf("sqrt(-q3_r2) = %g\n", sqrt(-q3_r2));
+			//printf("sqrt(-q3_r2) + absval(r) = %g\n", sqrt(-q3_r2) + absval(r));
+			//printf("pow(sqrt(-q3_r2) + absval(r), 1.0/3.0) = %g\n", pow(sqrt(-q3_r2) + absval(r), 1.0/3.0));
+			*r1 = (-absval(r)/r)*(pow(sqrt(-q3_r2) + absval(r), 1.0/3.0) + q/(pow(sqrt(r*r - q*q*q) + absval(r), 1.0/3.0))) - a2/3.0;
+			//printf("First root: %g\n", *r1);
+			b1 = a2 + *r1;
+			b0 = -1.0*a0/(*r1);
+			//printf("b1 = %g\nb0 = %g\n", b1, b0);
+			quad_roots(1.0, b1, b0, r2, r3);
+			return(1);
+		} else if (q3_r2 >= 0){
+			// handle 3 real roots
+			//printf("pow(q*q*q, 1.0/2.0) = %g\n", pow(q*q*q, 1.0/2.0));
+			//printf("acos(r/pow(q*q*q, 1.0/2.0)) = %g\n", acos(r/pow(q*q*q, 1.0/2.0)));
+			root_1 = -2.0*sqrt(q)*cos((acos(r/pow(q*q*q, 1.0/2.0)))/3.0) - a2/3.0;
+			//printf("First root: %g\n", root_1);
+			b1 = a2 + root_1;
+			b0 = -1.0*a0/root_1;
+			//printf("b1 = %g\nb0 = %g\n", b1, b0);
+			rVal = quad_roots(1.0, b1, b0, &root_2, &root_3);
+			*r1 = min(min(root_1, root_2), min(root_2, root_3));
+			*r2 = mid(root_1, root_2, root_3);
+			*r3 = max(max(root_1, root_2), max(root_2, root_3));
+			return(3);
+		}
+	}
+}	
+
+double calcQ(double a2, double a1){
+	double qVal;
+	//qVal = (a2*a2 - 3.*a1)/9.;
+	qVal = (a2/3.0)*(a2/3.0) - a1/3.0;
+	return(qVal);
+}
+
+double calcR(double a2, double a1, double a0){
+	double rVal;
+	//rVal = (2.*a2*a2*a2 - 9.*a1*a2 + 27.*a0)/54.;
+	rVal = a2*((a2/3.0)*(a2/3.0)*(1/3.0) - (a1/6.0)) + a0/2.0;
+	return(rVal);
+}
+
+#include<stdio.h>
+#include<math.h>
+#include"header.h"
+
+double max(double v1, double v2){
+	if (v1 < v2){
+		return(v2);
+	} else if (v1 > v2) {
+		return(v1);
+	} else {
+		return(v1);
+	}
+}
+
+double min(double v1, double v2){
+	if (v1 > v2){
+		return(v2);
+	} else if (v1 < v2) {
+		return(v1);
+	} else {
+		return(v1);
+	}
+}
+
+double mid(double v1, double v2, double v3){
+	if (v1 < v2 && v2 < v3 || v3 < v2 && v2 < v1){
+		return(v2);
+	} else if (v2 < v1 && v1 < v3 || v3 < v1 && v1 < v2){
+		return(v1);
+	} else if (v1 < v3 && v3 < v2 || v2 < v3 && v3 < v1){
+		return(v3);
+	} else {
+		return(v1);
+	}
+}
+
+double absval(double v){
+	if (v > 0){
+		return(v);
+	} else if (v < 0){
+		return(-v);
+	} else if (v == 0){
+		return(0);
+	}
+}
+
+#include<complex.h>
+int lin_root(double, double, double*);
+int quad_roots(double, double , double, double*, double*);
+int rcubic_roots(double, double, double, double*, double*, double*);
+int complex_quad(complex double, complex double, complex double, complex double*, complex double*);
+int complex_cubic(complex double, complex double, complex double, complex double*, complex double*, complex double*);
+int complex_lin_root(complex double, complex double, complex double*);
+double calcQ(double, double);
+double calcR(double, double, double);
+double max(double, double);
+double min(double, double);
+double mid(double, double, double);
+double absval(double);
+
+all:
+	gcc main.c quad_roots.c lin_root.c rcubic_roots.c minmax.c complex_lin_root.c complex_quad.c complex_cubic.c -o ex1b -lm
+	gcc mainMQ.c minmax.c complex_lin_root.c complex_quad.c complex_cubic.c -o ex1bMQ -lm
+
+q4.
+#include<stdio.h>
+#include<math.h>
+#include<complex.h>
+#include"header.h"
+
+int main(void) {
+	double t1, t2, t3;
+	double complex c_a2, c_a1, c_a0, c_t1, c_t2, c_t3;
+	double a2, a1, a0;
+	double R, V, alpha, beta;
+	int T, P;
+	int rVal;
+	double test;
+	printf("Name: <Tom McGrath>\n");
+	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+	printf("Course Code: <M5SC>\n");
+
+	// initialise constants for argon
+	alpha = 1.355;
+	beta = 0.032;
+	R = 0.0820578;
+	printf("%3s\t %3s\t %10s\t %10s\t %10s\t %10s\n", "T", "P", "V ideal", "V1", "V2", "V3");
+	for(T = 130; T <= 150; T += 10){
+		for(P = 1; P < 61; P++){
+			a2 = -1.0*(beta + (R*(double)T)/(double)P);
+			a1 = alpha/(double)P;
+			a0 = -1.0*beta*(alpha/(double)P);
+			rVal = rcubic_roots(a2,a1,a0,&t1,&t2,&t3);
+			if (rVal == 1){
+			printf("%3d\t %3d\t %10.5g\t %10.5g\t %10.5g\t %10.5g\n", T, P, (R*(double)T)/(double)P, t1, t1, t1);			
+			} else if (rVal == 3){
+			printf("%3d\t %3d\t %10.5g \t %10.5g\t %10.5g\t %10.5g\n", T, P, (R*(double)T)/(double)P, t1, t2, t3);
+			}
+		}
+		
+	}
+}
+
+MQ.
+#include<stdio.h>
+#include<math.h>
+#include<complex.h>
+#include"header.h"
+
+int main(void) {
+	int j;
+	double complex s_j, c2, c1, c0;
+	double complex t1, t2, t3;
+
+	for (j = 0; j < 100; j++){
+		s_j = cexp(j*M_PI/50.0);
+		c2 = -1.0*(2.0*s_j + 1.0)/(2.0*s_j - 1.0);
+		c1 = (15.0*s_j + 3.0)/(4.0*s_j - 2.0);
+		c0 = (9.0*s_j*s_j - 9.0*s_j)/(4.0*s_j - 2.0);
+		complex_cubic(c2, c1, c0, &t1, &t2, &t3);
+		printf("%10.5g + %10.5gi\t %10.5g + %10.5gi\t %10.5g + %10.5gi\n", creal(t1), cimag(t1), creal(t2), cimag(t2), creal(t3), cimag(t3));
+	}
+
+}
+
+#include<stdio.h>
+#include<math.h>
+#include<complex.h>
+#include"header.h"
+
+int complex_lin_root(double complex A, double complex B, double complex *r1){
+	if (A == 0 && B == 0){
+		return(-1); // any x will satisfy this
+	} else if (A == 0 && B != 0){
+		return(0); // no x will satisfy this
+	} else if (A != 0 && B != 0){
+		*r1 = -B/A;
+		return(1);
+	}
+}
+
+#include<complex.h>
+#include<math.h>
+#include<float.h>
+#include<stdio.h>
+#include"header.h"
+
+int complex_quad(double complex a2, double complex a1, double complex a0, double complex* r1, double complex* r2){
+	double complex disc, d_div_a0, d_div_a1;
+	double complex lrg_arg1, lrg_arg2;
+	double maxval = DBL_MAX;
+	int four, two;
+	four = 4;
+	two = 2;
+
+	// debug prints:
+	/*printf("a2 %.10g \t maxval/a2 %.10g\n", a2, maxval/a2);
+	printf("a1 %.10g \t sqrt(maxval) %.10g\n", a1, sqrt(maxval));
+	printf("a0 %.10g \t maxval/a0 %.10g\n", a0, maxval/a0);*/
+
+	if (a2 == 0 && a1 != 0) {		
+		return(-1); // linear equation has 1 real root
+	} else if (a2== 0 && a1 == 0) {
+		return(0); // no roots, either have 0==0 (a0 = 0) or a0==0 (inconsistent)
+	} else {
+		if (cabs(a1) > sqrt(maxval) && (cabs(a2) > maxval/cabs(a0) || cabs(a0) > maxval/cabs(a2))) {
+			// divide through by one of the arguments (largest?) and go again
+			//printf("All arguments too large, dividing\n");		
+			lrg_arg1 = fmax(cabs(a2), cabs(a1));
+			lrg_arg2 = fmax(cabs(lrg_arg1), cabs(a0));
+			a2 = a2/lrg_arg2;
+			a1 = a1/lrg_arg2;
+			a0 = a0/lrg_arg2;
+			disc = a1*a1 - four*a2*a0;
+		} else if (cabs(a1) > sqrt(maxval))	{
+			// re-form discriminant avoiding a1*a1
+			//printf("a1*a1 too large, dividing disc by a1 first\n");
+			d_div_a1 = a1 - four*(a2*a0/a1);
+			disc = d_div_a1 * a1;
+		} else if (cabs(a2) > maxval/cabs(a0) || cabs(a0) > maxval/cabs(a2)) {
+			// re-form discriminant avoiding a2*a0
+			//printf("a0 or a2 too large, dividing disc by a0 first\n");
+			d_div_a0 = ((a1*a1)/a0) - four*a2;
+			disc = d_div_a0*a0;
+		} else {
+			//printf("arguments fine, proceeding\n");
+			disc = a1*a1 - four*a2*a0;
+		}		
+	} // so now we have disc, just do the calculation
+	if (cimag(disc) == 0 && cabs(disc) == 0) { // no imaginary component, discriminant == 0
+		// handle 2 equal real roots
+		*r1 = -(a1)/(two*a2);
+		*r2 = -(a1)/(two*a2);
+		return(1);
+	} else {
+	// we can now return distinct roots
+		if(cabs(a1) > 0) {			
+			*r2 = (-a1 - csqrt(disc))/(two*a2); // avoid loss of significance by subtracting different signs
+			*r1 = (a0)/(*r2*a2);
+			return(2);
+		} else if (cabs(a1) <= 0) {
+			*r1 = (-a1 + csqrt(disc))/(two*a2); // we need to calculate the other root first this time
+			*r2 = (a0)/(*r1*a2);
+			return(2);
+		}
+	}	
+}
+
+#include<complex.h>
+#include<math.h>
+#include<float.h>
+#include<stdio.h>
+#include"header.h"
+
+int complex_cubic(double complex a2, double complex a1, double complex a0, double complex* r1, double complex* r2, double complex* r3){
+	int i, num_iter;
+	double complex z, b1, b0;
+	if (creal(a0) == 0 && cimag(a0) == 0){ // one root is zero
+		*r1 = 0;
+		complex_quad(1.0, a2, a1, r2, r3);
+		return(3);
+	}
+	// do Newton's root method to find a root
+	num_iter = 20;
+	z = 1.0 + 1.0*I;
+	for(i = 0; i < num_iter; i++){
+		z = z - (z*z*z + a2*z*z + a1*z + a0)/(3.0*z*z + 2.0*a2*z + a1);
+		//printf("guess at iteration %d: z = %g + %gi\n", i, creal(z), cimag(z));
+	}
+	//printf("final guess: z = %g + %gi\n", creal(z), cimag(z));
+	*r1 = z;
+	b1 = a2 + z;
+	if(a0 == 0){
+		b0 = 0;
+	} else {
+		b0 = -1.0*a0/z;
+	}
+	//printf("b1 = %6.5g+%6.5gi\tb0 = %6.5g+%6.5gi\n", creal(b1), cimag(b1), creal(b0), cimag(b0)); 
+	return(complex_quad(1.0, b1, b0, r2, r3));
+}
+
+
+
+---TABLES---
+q4.
+  T	   P	    V ideal	         V1	         V2	         V3
+130	   1	     10.668	     10.572	     10.572	     10.572
+130	   2	     5.3338	     5.2372	     5.2372	     5.2372
+130	   3	     3.5558 	   0.062188	   0.067202	     3.4584
+130	   4	     2.6669 	    0.06062	   0.069616	     2.5686
+130	   5	     2.1335 	   0.059639	   0.071476	     2.0344
+130	   6	     1.7779 	   0.058889	   0.073138	     1.6779
+130	   7	     1.5239 	   0.058271	   0.074705	      1.423
+130	   8	     1.3334 	   0.057742	   0.076223	     1.2315
+130	   9	     1.1853 	   0.057276	    0.07772	     1.0823
+130	  10	     1.0668 	   0.056858	   0.079216	    0.96268
+130	  11	    0.96977 	   0.056479	   0.080725	    0.86457
+130	  12	    0.88896 	   0.056132	   0.082258	    0.78257
+130	  13	    0.82058 	    0.05581	   0.083826	    0.71294
+130	  14	    0.76197 	   0.055511	    0.08544	    0.65301
+130	  15	    0.71117 	   0.055231	    0.08711	    0.60083
+130	  16	    0.66672 	   0.054967	   0.088849	     0.5549
+130	  17	     0.6275 	   0.054718	   0.090667	    0.51412
+130	  18	    0.59264 	   0.054482	   0.092581	    0.47758
+130	  19	    0.56145 	   0.054257	   0.094607	    0.44458
+130	  20	    0.53338 	   0.054044	   0.096766	    0.41457
+130	  21	    0.50798 	   0.053839	   0.099083	    0.38705
+130	  22	    0.48489 	   0.053643	    0.10159	    0.36165
+130	  23	     0.4638 	   0.053456	    0.10434	    0.33801
+130	  24	    0.44448 	   0.053275	    0.10737	    0.31583
+130	  25	     0.4267 	   0.053101	    0.11079	    0.29481
+130	  26	    0.41029 	   0.052933	    0.11472	    0.27464
+130	  27	    0.39509 	   0.052772	    0.11936	    0.25497
+130	  28	    0.38098 	   0.052615	     0.1251	    0.23527
+130	  29	    0.36785 	   0.052464	    0.13283	    0.21455
+130	  30	    0.35558 	   0.052317	    0.14585	    0.18941
+130	  31	    0.34411	   0.052174	   0.052174	   0.052174
+130	  32	    0.33336	   0.052036	   0.052036	   0.052036
+130	  33	    0.32326	   0.051902	   0.051902	   0.051902
+130	  34	    0.31375	   0.051771	   0.051771	   0.051771
+130	  35	    0.30479	   0.051644	   0.051644	   0.051644
+130	  36	    0.29632	    0.05152	    0.05152	    0.05152
+130	  37	    0.28831	   0.051399	   0.051399	   0.051399
+130	  38	    0.28072	   0.051282	   0.051282	   0.051282
+130	  39	    0.27353	   0.051167	   0.051167	   0.051167
+130	  40	    0.26669	   0.051055	   0.051055	   0.051055
+130	  41	    0.26018	   0.050945	   0.050945	   0.050945
+130	  42	    0.25399	   0.050838	   0.050838	   0.050838
+130	  43	    0.24808	   0.050733	   0.050733	   0.050733
+130	  44	    0.24244	    0.05063	    0.05063	    0.05063
+130	  45	    0.23706	    0.05053	    0.05053	    0.05053
+130	  46	     0.2319	   0.050432	   0.050432	   0.050432
+130	  47	    0.22697	   0.050335	   0.050335	   0.050335
+130	  48	    0.22224	   0.050241	   0.050241	   0.050241
+130	  49	     0.2177	   0.050148	   0.050148	   0.050148
+130	  50	    0.21335	   0.050057	   0.050057	   0.050057
+130	  51	    0.20917	   0.049968	   0.049968	   0.049968
+130	  52	    0.20514	   0.049881	   0.049881	   0.049881
+130	  53	    0.20127	   0.049795	   0.049795	   0.049795
+130	  54	    0.19755	    0.04971	    0.04971	    0.04971
+130	  55	    0.19395	   0.049627	   0.049627	   0.049627
+130	  56	    0.19049	   0.049546	   0.049546	   0.049546
+130	  57	    0.18715	   0.049465	   0.049465	   0.049465
+130	  58	    0.18392	   0.049387	   0.049387	   0.049387
+130	  59	    0.18081	   0.049309	   0.049309	   0.049309
+130	  60	    0.17779	   0.049233	   0.049233	   0.049233
+140	   1	     11.488	     11.402	     11.402	     11.402
+140	   2	      5.744	      5.657	      5.657	      5.657
+140	   3	     3.8294	     3.7417	     3.7417	     3.7417
+140	   4	      2.872	     2.7837	     2.7837	     2.7837
+140	   5	     2.2976	     2.2087	     2.2087	     2.2087
+140	   6	     1.9147	     1.8251	     1.8251	     1.8251
+140	   7	     1.6412	     1.5509	     1.5509	     1.5509
+140	   8	      1.436	     1.3451	     1.3451	     1.3451
+140	   9	     1.2765	     1.1848	     1.1848	     1.1848
+140	  10	     1.1488	     1.0564	     1.0564	     1.0564
+140	  11	     1.0444	    0.95123	    0.95123	    0.95123
+140	  12	    0.95734	    0.86341	    0.86341	    0.86341
+140	  13	     0.8837	    0.78894	    0.78894	    0.78894
+140	  14	    0.82058	    0.72497	    0.72497	    0.72497
+140	  15	    0.76587	    0.66937	    0.66937	    0.66937
+140	  16	    0.71801	    0.62058	    0.62058	    0.62058
+140	  17	    0.67577	    0.57737	    0.57737	    0.57737
+140	  18	    0.63823	    0.53881	    0.53881	    0.53881
+140	  19	    0.60464	    0.50416	    0.50416	    0.50416
+140	  20	     0.5744	    0.47281	    0.47281	    0.47281
+140	  21	    0.54705	    0.44428	    0.44428	    0.44428
+140	  22	    0.52219	    0.41817	    0.41817	    0.41817
+140	  23	    0.49948	    0.39415	    0.39415	    0.39415
+140	  24	    0.47867	    0.37193	    0.37193	    0.37193
+140	  25	    0.45952	    0.35129	    0.35129	    0.35129
+140	  26	    0.44185 	   0.068341	     0.0735	    0.33201
+140	  27	    0.42548 	   0.065665	   0.077908	    0.31391
+140	  28	    0.41029 	   0.064224	    0.08123	    0.29683
+140	  29	    0.39614 	   0.063172	   0.084341	    0.28063
+140	  30	    0.38294 	   0.062326	   0.087459	    0.26515
+140	  31	    0.37058 	   0.061614	   0.090711	    0.25026
+140	  32	      0.359 	   0.060995	   0.094213	     0.2358
+140	  33	    0.34812 	   0.060447	   0.098104	    0.22157
+140	  34	    0.33789 	   0.059953	    0.10259	    0.20734
+140	  35	    0.32823 	   0.059503	    0.10806	    0.19266
+140	  36	    0.31911 	    0.05909	    0.11541	    0.17661
+140	  37	    0.31049 	   0.058708	     0.1288	    0.15499
+140	  38	    0.30232	   0.058351	   0.058351	   0.058351
+140	  39	    0.29457	   0.058018	   0.058018	   0.058018
+140	  40	     0.2872	   0.057704	   0.057704	   0.057704
+140	  41	     0.2802	   0.057408	   0.057408	   0.057408
+140	  42	    0.27353	   0.057128	   0.057128	   0.057128
+140	  43	    0.26716	   0.056861	   0.056861	   0.056861
+140	  44	    0.26109	   0.056607	   0.056607	   0.056607
+140	  45	    0.25529	   0.056365	   0.056365	   0.056365
+140	  46	    0.24974	   0.056133	   0.056133	   0.056133
+140	  47	    0.24443	    0.05591	    0.05591	    0.05591
+140	  48	    0.23934	   0.055697	   0.055697	   0.055697
+140	  49	    0.23445	   0.055491	   0.055491	   0.055491
+140	  50	    0.22976	   0.055293	   0.055293	   0.055293
+140	  51	    0.22526	   0.055102	   0.055102	   0.055102
+140	  52	    0.22092	   0.054917	   0.054917	   0.054917
+140	  53	    0.21676	   0.054739	   0.054739	   0.054739
+140	  54	    0.21274	   0.054566	   0.054566	   0.054566
+140	  55	    0.20887	   0.054399	   0.054399	   0.054399
+140	  56	    0.20514	   0.054236	   0.054236	   0.054236
+140	  57	    0.20155	   0.054078	   0.054078	   0.054078
+140	  58	    0.19807	   0.053925	   0.053925	   0.053925
+140	  59	    0.19471	   0.053776	   0.053776	   0.053776
+140	  60	    0.19147	   0.053631	   0.053631	   0.053631
+150	   1	     12.309	      12.23	      12.23	      12.23
+150	   2	     6.1543	     6.0754	     6.0754	     6.0754
+150	   3	     4.1029	     4.0235	     4.0235	     4.0235
+150	   4	     3.0772	     2.9974	     2.9974	     2.9974
+150	   5	     2.4617	     2.3815	     2.3815	     2.3815
+150	   6	     2.0514	     1.9707	     1.9707	     1.9707
+150	   7	     1.7584	     1.6772	     1.6772	     1.6772
+150	   8	     1.5386	     1.4569	     1.4569	     1.4569
+150	   9	     1.3676	     1.2854	     1.2854	     1.2854
+150	  10	     1.2309	     1.1481	     1.1481	     1.1481
+150	  11	      1.119	     1.0357	     1.0357	     1.0357
+150	  12	     1.0257	    0.94192	    0.94192	    0.94192
+150	  13	    0.94682	    0.86245	    0.86245	    0.86245
+150	  14	    0.87919	    0.79424	    0.79424	    0.79424
+150	  15	    0.82058	    0.73503	    0.73503	    0.73503
+150	  16	    0.76929	    0.68313	    0.68313	    0.68313
+150	  17	    0.72404	    0.63724	    0.63724	    0.63724
+150	  18	    0.68381	    0.59636	    0.59636	    0.59636
+150	  19	    0.64782	    0.55969	    0.55969	    0.55969
+150	  20	    0.61543	    0.52659	    0.52659	    0.52659
+150	  21	    0.58613	    0.49656	    0.49656	    0.49656
+150	  22	    0.55949	    0.46916	    0.46916	    0.46916
+150	  23	    0.53516	    0.44405	    0.44405	    0.44405
+150	  24	    0.51286	    0.42093	    0.42093	    0.42093
+150	  25	    0.49235	    0.39956	    0.39956	    0.39956
+150	  26	    0.47341	    0.37973	    0.37973	    0.37973
+150	  27	    0.45588	    0.36127	    0.36127	    0.36127
+150	  28	     0.4396	    0.34401	    0.34401	    0.34401
+150	  29	    0.42444	    0.32782	    0.32782	    0.32782
+150	  30	    0.41029	    0.31259	    0.31259	    0.31259
+150	  31	    0.39705	    0.29821	    0.29821	    0.29821
+150	  32	    0.38465	    0.28459	    0.28459	    0.28459
+150	  33	    0.37299	    0.27164	    0.27164	    0.27164
+150	  34	    0.36202	    0.25929	    0.25929	    0.25929
+150	  35	    0.35168	    0.24746	    0.24746	    0.24746
+150	  36	    0.34191	    0.23609	    0.23609	    0.23609
+150	  37	    0.33267	    0.22511	    0.22511	    0.22511
+150	  38	    0.32391	    0.21445	    0.21445	    0.21445
+150	  39	    0.31561	    0.20403	    0.20403	    0.20403
+150	  40	    0.30772	    0.19376	    0.19376	    0.19376
+150	  41	    0.30021	    0.18355	    0.18355	    0.18355
+150	  42	    0.29306	    0.17323	    0.17323	    0.17323
+150	  43	    0.28625	    0.16256	    0.16256	    0.16256
+150	  44	    0.27974	    0.15109	    0.15109	    0.15109
+150	  45	    0.27353 	   0.076919	     0.0911	    0.13751
+150	  46	    0.26758	   0.072841	   0.072841	   0.072841
+150	  47	    0.26189	   0.070649	   0.070649	   0.070649
+150	  48	    0.25643	   0.069085	   0.069085	   0.069085
+150	  49	     0.2512	   0.067855	   0.067855	   0.067855
+150	  50	    0.24617	   0.066836	   0.066836	   0.066836
+150	  51	    0.24135	   0.065963	   0.065963	   0.065963
+150	  52	    0.23671	   0.065198	   0.065198	   0.065198
+150	  53	    0.23224	   0.064517	   0.064517	   0.064517
+150	  54	    0.22794	   0.063903	   0.063903	   0.063903
+150	  55	    0.22379	   0.063343	   0.063343	   0.063343
+150	  56	     0.2198	   0.062829	   0.062829	   0.062829
+150	  57	    0.21594	   0.062353	   0.062353	   0.062353
+150	  58	    0.21222	    0.06191	    0.06191	    0.06191
+150	  59	    0.20862	   0.061496	   0.061496	   0.061496
+150	  60	    0.20514	   0.061108	   0.061108	   0.061108
+
+MQ.
+         0 +          0i	        1.5 +    -2.5981i	        1.5 +     2.5981i
+ -0.032406 +          0i	     1.4014 +    -2.5542i	     1.4014 +     2.5542i
+ -0.066799 +          0i	     1.3222 +    -2.5139i	     1.3222 +     2.5139i
+  -0.10318 +          0i	     1.2584 +    -2.4773i	     1.2584 +     2.4773i
+  -0.14154 +          0i	     1.2071 +    -2.4445i	     1.2071 +     2.4445i
+  -0.18184 +          0i	     1.1662 +    -2.4155i	     1.1662 +     2.4155i
+  -0.22405 +          0i	      1.134 +    -2.3901i	      1.134 +     2.3901i
+   -0.2681 +          0i	     1.1091 +    -2.3683i	     1.1091 +     2.3683i
+  -0.31391 +          0i	     1.0906 +    -2.3499i	     1.0906 +     2.3499i
+  -0.36139 +          0i	     1.0774 +    -2.3347i	     1.0774 +     2.3347i
+  -0.41045 +          0i	      1.069 +    -2.3226i	      1.069 +     2.3226i
+  -0.46098 +          0i	     1.0647 +    -2.3136i	     1.0647 +     2.3136i
+  -0.51286 +          0i	      1.064 +    -2.3074i	      1.064 +     2.3074i
+  -0.56599 +          0i	     1.0666 +     -2.304i	     1.0666 +      2.304i
+  -0.62025 +          0i	     1.0719 +    -2.3033i	     1.0719 +     2.3033i
+  -0.67555 +          0i	     1.0797 +    -2.3051i	     1.0797 +     2.3051i
+  -0.73178 +          0i	     1.0898 +    -2.3093i	     1.0898 +     2.3093i
+  -0.78887 +          0i	     1.1019 +    -2.3159i	     1.1019 +     2.3159i
+  -0.84674 +          0i	     1.1158 +    -2.3248i	     1.1158 +     2.3248i
+  -0.90532 +          0i	     1.1313 +    -2.3358i	     1.1313 +     2.3358i
+  -0.96457 +          0i	     1.1482 +     -2.349i	     1.1482 +      2.349i
+   -1.0244 +          0i	     1.1665 +    -2.3641i	     1.1665 +     2.3641i
+   -1.0849 +          0i	      1.186 +    -2.3812i	      1.186 +     2.3812i
+    -1.146 +          0i	     1.2066 +    -2.4002i	     1.2066 +     2.4002i
+   -1.2076 +          0i	     1.2282 +     -2.421i	     1.2282 +      2.421i
+   -1.2697 + -9.4546e-125i	     1.2509 +     2.4435i	     1.2509 +    -2.4435i
+   -1.3325 + -9.404e-38i	     1.2744 +     2.4678i	     1.2744 +    -2.4678i
+    1.2988 +     2.4937i	     1.2988 +    -2.4937i	    -1.3958 +          0i
+     1.324 +     2.5213i	      1.324 +    -2.5213i	    -1.4597 + 2.2204e-16i
+   -1.5178 + -0.00080234i	     1.3479 +     2.5594i	     1.3458 +    -2.5586i
+   -1.5893 +          0i	     1.3768 +    -2.5811i	     1.3768 +     2.5811i
+   -1.6551 + 8.3163e-112i	     1.4043 +    -2.6134i	     1.4043 +     2.6134i
+   -1.7216 +          0i	     1.4326 +    -2.6471i	     1.4326 +     2.6471i
+   -1.7889 +          0i	     1.4615 +    -2.6824i	     1.4615 +     2.6824i
+    1.4912 +    -2.7191i	     1.4912 +     2.7191i	    -1.8568 +          0i
+   -1.9256 +          0i	     1.5215 +    -2.7573i	     1.5215 +     2.7573i
+    1.5525 +     -2.797i	     1.5525 +      2.797i	    -1.9952 +          0i
+   -2.0656 +          0i	     1.5842 +    -2.8381i	     1.5842 +     2.8381i
+    1.6166 +     2.8807i	     1.6166 +    -2.8807i	    -2.1369 +          0i
+    1.6497 +     2.9247i	     1.6497 +    -2.9247i	    -2.2092 +          0i
+    1.6834 +     2.9702i	     1.6834 +    -2.9702i	    -2.2824 + 2.2204e-16i
+    1.7179 +     3.0172i	     1.7179 +    -3.0172i	    -2.3567 + 2.2204e-16i
+     1.753 +     3.0656i	      1.753 +    -3.0656i	     -2.432 + -2.2204e-16i
+    1.7889 +     3.1155i	     1.7889 +    -3.1155i	    -2.5084 + -2.2204e-16i
+   -2.5859 +          0i	     1.8255 +    -3.1669i	     1.8255 +     3.1669i
+    1.8628 +     3.2198i	     1.8628 +    -3.2198i	    -2.6646 +          0i
+   -2.7445 + -2.2959e-41i	     1.9008 +     3.2742i	     1.9008 +    -3.2742i
+   -2.8257 + -4.7305e-23i	     1.9396 +     3.3301i	     1.9396 +    -3.3301i
+    1.9792 +    -3.3876i	     1.9792 +     3.3876i	    -2.9081 +          0i
+    2.0195 +     3.4467i	     2.0195 +    -3.4467i	    -2.9919 + 2.2204e-16i
+    2.0606 +     3.5073i	     2.0606 +    -3.5073i	    -3.0771 + -2.2204e-16i
+    2.1025 +     3.5695i	     2.1025 +    -3.5695i	    -3.1636 +          0i
+    2.1453 +     3.6334i	     2.1453 +    -3.6334i	    -3.2517 +          0i
+    2.1888 +     3.6989i	     2.1888 +    -3.6989i	    -3.3412 + 4.4409e-16i
+    2.2333 +      3.766i	     2.2333 +     -3.766i	    -3.4323 + -2.2204e-16i
+    -3.525 +          0i	     2.2786 +    -3.8349i	     2.2786 +     3.8349i
+    2.3247 +    -3.9055i	     2.3247 +     3.9055i	    -3.6194 + -5.8918e-06i
+    2.3718 +    -3.9778i	     2.3718 +     3.9778i	    -3.7154 + 2.2204e-16i
+   -3.8131 +          0i	     2.4198 +    -4.0519i	     2.4198 +     4.0519i
+   -3.9126 + -2.4074e-35i	     2.4687 +     4.1278i	     2.4687 +    -4.1278i
+    2.5186 +     4.2056i	     2.5186 +    -4.2056i	     -4.014 + -4.4409e-16i
+    2.5695 +     4.2852i	     2.5695 +    -4.2852i	    -4.1172 +          0i
+    2.6214 +     4.3668i	     2.6214 +    -4.3668i	    -4.2223 + 8.8818e-16i
+    2.6743 +     4.4503i	     2.6743 +    -4.4503i	    -4.3294 +          0i
+    2.7283 +     4.5357i	     2.7283 +    -4.5357i	    -4.4384 +          0i
+   -5.0707 +    0.27501i	     3.3177 +     -4.246i	       2.77 +      3.971i
+   -4.6629 + -9.7235e-63i	     2.8394 +     4.7127i	     2.8394 +    -4.7127i
+    2.8966 +    -4.8042i	     2.8966 +     4.8042i	    -4.7783 + 7.5978e-11i
+     2.955 +     4.8979i	      2.955 +    -4.8979i	    -4.8959 +          0i
+    3.0145 +     4.9938i	     3.0145 +    -4.9938i	    -5.0159 + 4.4409e-16i
+    3.0752 +     5.0919i	     3.0752 +    -5.0919i	    -5.1381 + -4.4409e-16i
+    3.1372 +     5.1922i	     3.1372 +    -5.1922i	    -5.2627 + -8.8818e-16i
+    3.2003 +     5.2948i	     3.2003 +    -5.2948i	    -5.3898 + 4.4409e-16i
+    3.2648 +     5.3997i	     3.2648 +    -5.3997i	    -5.5193 +          0i
+    3.3305 +      5.507i	     3.3305 +     -5.507i	    -5.6514 +          0i
+    3.3976 +    -5.6168i	     3.3976 +     5.6168i	    -5.7862 + 3.2091e-08i
+   -5.9235 +          0i	      3.466 +     -5.729i	      3.466 +      5.729i
+    3.5338 +    -5.8432i	     3.5374 +     5.8451i	    -6.0632 + -0.0018888i
+   -6.2066 +          0i	      3.607 +     -5.961i	      3.607 +      5.961i
+   -6.3523 + 1.8367e-40i	     3.6797 +    -6.0809i	     3.6797 +     6.0809i
+    3.7538 +     6.2035i	     3.7538 +    -6.2035i	     -6.501 + 8.8818e-16i
+    3.8294 +     6.3288i	     3.8294 +    -6.3288i	    -6.6527 +          0i
+    3.9066 +     6.4569i	     3.9066 +    -6.4569i	    -6.8074 + -4.4409e-16i
+    3.9854 +     6.5878i	     3.9854 +    -6.5878i	    -6.9653 + -4.4409e-16i
+    4.0657 +     6.7216i	     4.0657 +    -6.7216i	    -7.1263 +          0i
+    4.1477 +    -6.8584i	     4.1477 +     6.8584i	    -7.2906 + -4.4409e-16i
+   -7.4583 +          0i	     4.2314 +    -6.9982i	     4.2314 +     6.9982i
+    -141.7 +     104.51i	      142.7 +    -104.52i	  0.0050921 +   0.016279i
+   -7.8039 +          0i	     4.4039 +     -7.287i	     4.4039 +      7.287i
+    -7.982 + -5.3039e-13i	     4.4928 +     7.4362i	     4.4928 +    -7.4362i
+    4.5836 +     7.5887i	     4.5836 +    -7.5887i	    -8.1637 + -8.8818e-16i
+    4.6762 +     7.7445i	     4.6762 +    -7.7445i	    -8.3492 + 8.8818e-16i
+    4.7708 +     7.9037i	     4.7708 +    -7.9037i	    -8.5385 + -4.4409e-16i
+    4.8673 +     8.0663i	     4.8673 +    -8.0663i	    -8.7316 +          0i
+    4.9657 +     8.2325i	     4.9657 +    -8.2325i	    -8.9288 + -3.1974e-14i
+   -9.1299 + -3.752e-21i	     5.0663 +     8.4023i	     5.0663 +    -8.4023i
+   -9.3353 + -8.2542e-06i	     5.1689 +     8.5758i	     5.1688 +    -8.5758i
+   -9.4934 +    0.12082i	     5.3597 +    -8.8612i	     5.1359 +     8.7403i
+   -9.7588 + 3.2627e-55i	     5.3804 +    -8.9342i	     5.3804 +     8.9342i
+    5.4896 +     9.1192i	     5.4896 +    -9.1192i	    -9.9771 + -1.2731e-08i

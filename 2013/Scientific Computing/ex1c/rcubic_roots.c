@@ -86,6 +86,7 @@ int rcubic_roots(double args[3], double roots[3]){
 	} else {
 		//printf("general case\n");
 		if (q3_r2 < 0){
+			//printf("2 complex roots\n");
 			//handle 2 complex roots
 			//printf("sqrt(-q3_r2) = %g\n", sqrt(-q3_r2));
 			//printf("sqrt(-q3_r2) + absval(r) = %g\n", sqrt(-q3_r2) + absval(r));
@@ -95,24 +96,27 @@ int rcubic_roots(double args[3], double roots[3]){
 			args_qr[2] = 1.0;
 			args_qr[1] = a2 + roots[0];
 			args_qr[0] = -1.0*a0/(roots[0]);
-			//printf("b1 = %g\nb0 = %g\n", b1, b0);
+			//printf("args_qr[1] = %g\nargs_qr[0] = %g\n", args_qr[1], args_qr[0]);
 			quad_roots(args_qr, qr_r);
 			roots[1] = qr_r[0];
 			roots[2] = qr_r[1];
 			return(1);
 		} else if (q3_r2 >= 0){
+			//printf("3 real roots\n");
+			//printf("roots[0] = %g\n", roots[0]);
 			// handle 3 real roots
 			//printf("pow(q*q*q, 1.0/2.0) = %g\n", pow(q*q*q, 1.0/2.0));
 			//printf("acos(r/pow(q*q*q, 1.0/2.0)) = %g\n", acos(r/pow(q*q*q, 1.0/2.0)));
 			root_1 = -2.0*sqrt(q)*cos((acos(r/pow(q*q*q, 1.0/2.0)))/3.0) - a2/3.0;
 			//printf("First root: %g\n", root_1);
-			//printf("b1 = %g\nb0 = %g\n", b1, b0);
+			//printf("args_qr[1] = %g\nargs_qr[0] = %g\n", args_qr[1], args_qr[0]);
 			args_qr[2] = 1.0;
-			args_qr[1] = a2 + roots[0];
-			args_qr[0] = -1.0*a0/(roots[0]);
+			args_qr[1] = a2 + root_1;
+			args_qr[0] = -1.0*a0/(root_1);
 			rVal = quad_roots(args_qr, qr_r);
 			root_2 = qr_r[0];
 			root_3 = qr_r[1];
+			//printf("root 2: %g\nroot 3: %g\n", root_2, root_3);
 			roots[0] = min(min(root_1, root_2), min(root_2, root_3));
 			roots[1] = mid(root_1, root_2, root_3);
 			roots[2] = max(max(root_1, root_2), max(root_2, root_3));

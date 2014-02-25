@@ -4,13 +4,16 @@
 #include"header.h"
 
 int main(void) {
-	double args[3];
-	double r[3];
+	double args[4];
+	double cr_args[3];
+	double cr_r[3];
+	double r[4];
 	double lr_r[1];
-	args[0] = 1.0;
-	args[1] = 1.0;
-	args[2] = 1.0;
-	rcubic_roots(args, r);
-	printf("r1 = %10.5g\nr2=%10.5g\nr3 = %10.5g\n", r[0], r[1], r[2]);
+	args[3] = 3.0;
+	args[2] = -39.0;
+	args[1] = -47.0;
+	args[0] = 210.0;	
+	rquartic_roots(args, r);
+	printf("r1 = %10.5g\nr2 = %10.5g\nr3 = %10.5g\nr4 = %10.5g\n", r[0], r[1], r[2], r[3]);
 }
 
