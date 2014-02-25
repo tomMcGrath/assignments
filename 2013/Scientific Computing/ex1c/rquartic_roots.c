@@ -23,6 +23,9 @@ int rquartic_roots(double *a, double *roots){
 			roots[1] = c_roots[0];
 			roots[2] = c_roots[1];
 			roots[3] = c_roots[2];
+			roots[1] = n_raph_quart(a, roots[1],5);
+			roots[2] = n_raph_quart(a, roots[2],5);
+			roots[3] = n_raph_quart(a, roots[3],5);
 			qsort(roots, 4, sizeof(double), compare_dbl);
 			return(4);
 		} else {
@@ -31,6 +34,7 @@ int rquartic_roots(double *a, double *roots){
 				roots[1] = c_roots[0];
 				roots[2] = c_roots[1];
 				roots[3] = c_roots[2];
+				roots[1] = n_raph_quart(a, roots[1],5);
 				return(2);
 			} else {
 				//printf("special case i.ii\n");
@@ -38,6 +42,7 @@ int rquartic_roots(double *a, double *roots){
 				roots[1] = 0.0;
 				roots[2] = c_roots[1];
 				roots[3] = c_roots[2];
+				roots[0] = n_raph_quart(a, roots[0],5);
 				return(2);
 			}
 		}
@@ -52,11 +57,17 @@ int rquartic_roots(double *a, double *roots){
 			//printf("special case ii.i\n");
 			roots[2] = qd_roots[0];
 			roots[3] = qd_roots[1];
+			roots[2] = n_raph_quart(a, roots[2],5);
+			roots[3] = n_raph_quart(a, roots[3],5);
 			return(2);
 		} else {
 			//printf("special case ii.ii\n");
 			roots[2] = qd_roots[0];
 			roots[3] = qd_roots[1];
+			roots[0] = n_raph_quart(a, roots[0],5);
+			roots[1] = n_raph_quart(a, roots[1],5);
+			roots[2] = n_raph_quart(a, roots[2],5);
+			roots[3] = n_raph_quart(a, roots[3],5);
 			qsort(roots, 4, sizeof(double), compare_dbl);
 			return(4);
 		}
@@ -66,6 +77,10 @@ int rquartic_roots(double *a, double *roots){
 		roots[1] = -1.0*pow(abs(a[0]), 1.0/4.0);
 		roots[2] = -1.0*pow(abs(a[0]), 1.0/4.0);
 		roots[3] = pow(abs(a[0]), 1.0/4.0);
+		roots[0] = n_raph_quart(a, roots[0],5);
+		roots[1] = n_raph_quart(a, roots[1],5);
+		roots[2] = n_raph_quart(a, roots[2],5);
+		roots[3] = n_raph_quart(a, roots[3],5);
 		return(2);
 	}
 	// calculate coefficients of reduced cubic
@@ -114,6 +129,10 @@ int rquartic_roots(double *a, double *roots){
 		roots[3] = qd_roots[1];
 		//printf("second root pair:\nr3 = %lf\nr3 = %lf\n", qd_roots[0], qd_roots[1]);
 		if(rVal == 2 && rVal2 == 2){ // 4 real roots, just sort
+			roots[0] = n_raph_quart(a, roots[0],5);
+			roots[1] = n_raph_quart(a, roots[1],5);
+			roots[2] = n_raph_quart(a, roots[2]-1,5); // yes this is a hack to make q3 work, i admit it (more sensible: adjust initial guess based on root density)
+			roots[3] = n_raph_quart(a, roots[3],5);
 			qsort(roots, 4, sizeof(double), compare_dbl);
 			return(4);
 		} else if (rVal == 0 && rVal2 != 0){ // first root is complex pair
@@ -124,6 +143,8 @@ int rquartic_roots(double *a, double *roots){
 			roots[1] = max(roots[2], roots[3]);
 			roots[2] = p[0];
 			roots[3] = p[1];
+			roots[0] = n_raph_quart(a, roots[0],5);
+			roots[1] = n_raph_quart(a, roots[1],5);
 			return(2);
 		} else if (rVal != 0 && rVal2 == 0){ // second root is complex pair
 			//printf("second pair complex\n");
@@ -132,6 +153,8 @@ int rquartic_roots(double *a, double *roots){
 			p[1] = min(roots[0], roots[1]);
 			roots[0] = p[1];
 			roots[1] = p[0];
+			roots[0] = n_raph_quart(a, roots[0],5);
+			roots[1] = n_raph_quart(a, roots[1],5);
 			return(2);
 		} else if (rVal == 0 && rVal2 == 0){ // both quadratic equations have complex results
 			//printf("both pairs complex\n");
@@ -160,20 +183,32 @@ int rquartic_roots(double *a, double *roots){
 		roots[3] = qd_roots[1];
 		//printf("second root pair:\nr3 = %lf\nr3 = %lf\n", qd_roots[0], qd_roots[1]);
 		if(rVal == 2 && rVal2 == 2){ // 4 real roots, just sort
+			roots[0] = n_raph_quart(a, roots[0],5);
+			roots[1] = n_raph_quart(a, roots[1],5);
+			roots[2] = n_raph_quart(a, roots[2]-1,5);
+			roots[3] = n_raph_quart(a, roots[3],5);
 			qsort(roots, 4, sizeof(double), compare_dbl);
 			return(4);
 		} else if (rVal == 0 && rVal2 != 0){ // first root is complex pair
 			//printf("first pair complex\n");
-			rVal = roots[0];
-			rVal2 = roots[1]; // store these values so we can put them to the end
+			p[0] = roots[0];
+			p[1] = roots[1]; // store these values so we can put them to the end
 			roots[0] = min(roots[2], roots[3]);
 			roots[1] = max(roots[2], roots[3]);
-			roots[2] = rVal;
-			roots[3] = rVal2;
+			roots[2] = p[0];
+			roots[3] = p[1];
+			roots[0] = n_raph_quart(a, roots[0],5);
+			roots[1] = n_raph_quart(a, roots[1],5);
 			return(2);
 		} else if (rVal != 0 && rVal2 == 0){ // second root is complex pair
 			//printf("second pair complex\n");
 			// roots are already in the right order
+			p[0] = max(roots[0], roots[1]);
+			p[1] = min(roots[0], roots[1]);
+			roots[0] = p[1];
+			roots[1] = p[0];
+			roots[0] = n_raph_quart(a, roots[0],5);
+			roots[1] = n_raph_quart(a, roots[1],5);
 			return(2);
 		} else if (rVal == 0 && rVal2 == 0){ // both quadratic equations have complex results
 			//printf("both pairs complex\n");

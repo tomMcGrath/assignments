@@ -24,6 +24,7 @@ int rcubic_roots(double args[3], double roots[3]){
 	if (a2 == 0 && a1 == 0){ // special case i
 		//printf("case i\n");
 		roots[0] = pow(absval(a0), 1.0/3.0);
+		roots[0] = n_raph_cub(args, roots[0], 5);
 		roots[1] = (-1.0/2.0)*pow(absval(a0), 1.0/3.0); // real part of complex root of unity
 		roots[2] = (sqrt(3.0)/2.0)*pow(absval(a0), 1.0/3.0); // positive value of imaginary part
 		return(1);
@@ -36,6 +37,8 @@ int rcubic_roots(double args[3], double roots[3]){
 		rVal = quad_roots(args_qr, qr_r);
 		roots[1] = qr_r[0];
 		roots[2] = qr_r[1];
+		roots[1] = n_raph_cub(args, roots[1], 5);
+		roots[2] = n_raph_cub(args, roots[2], 5);
 		return(rVal);
 	} else if (a0 == a1*a2) { // special case iii
 		//printf("case iii\n");
@@ -46,9 +49,13 @@ int rcubic_roots(double args[3], double roots[3]){
 			roots[0] = min(min(root_1, root_2), min(root_2, root_3));
 			roots[1] = mid(root_1, root_2, root_3);
 			roots[2] = max(max(root_1, root_2), max(root_2, root_3));
+			roots[0] = n_raph_cub(args, roots[0], 5);
+			roots[1] = n_raph_cub(args, roots[1], 5);
+			roots[2] = n_raph_cub(args, roots[2], 5);
 			return(3);
 		} else if (a1 > 0){
 			roots[0] = root_1;
+			roots[0] = n_raph_cub(args, roots[0], 5);
 			roots[1] = 0; // there's no real part to the other roots
 			roots[2] = sqrt(a1); // only complex root exists
 			return(1);
@@ -58,6 +65,9 @@ int rcubic_roots(double args[3], double roots[3]){
 		roots[0] = (-1.0/3.0)*a2;
 		roots[1] = (-1.0/3.0)*a2;
 		roots[2] = (-1.0/3.0)*a2;
+		roots[0] = n_raph_cub(args, roots[0], 5);
+		roots[1] = roots[0];
+		roots[2] = roots[0];
 		return(2);
 	} else if (r == 0){ // special case v
 		//printf("case v\n");
@@ -65,6 +75,9 @@ int rcubic_roots(double args[3], double roots[3]){
 			roots[0] = -1.0*sqrt(3.0*q) - (1.0/3.0)*a2;
 			roots[1] = (-1.0/3.0)*a2;
 			roots[2] = sqrt(3.0*q) - (1.0/3.0)*a2;
+			roots[0] = n_raph_cub(args, roots[0], 5);
+			roots[1] = n_raph_cub(args, roots[1], 5);
+			roots[2] = n_raph_cub(args, roots[2], 5);
 			return(3);
 		} else if (q < 0) {
 			roots[0] = (-1.0/3.0)*a2;
@@ -77,6 +90,7 @@ int rcubic_roots(double args[3], double roots[3]){
 		roots[0] = pow(absval(-2.0*r), 1.0/3.0) - (a2/3.0);
 		roots[1] = pow(absval(-2.0*r), 1.0/3.0)*(1.0/2.0) - (a2/3.0);
 		roots[2] = pow(absval(-2.0*r), 1.0/3.0)*(sqrt(3.0)/2.0);
+		roots[0] = n_raph_cub(args, roots[0], 5);
 		return(1);
 	} else if (q*q*q < DBL_MAX && r*r < DBL_MAX && q*q*q == r*r){ // special case vii
 		//printf("case vii\n");
@@ -101,6 +115,7 @@ int rcubic_roots(double args[3], double roots[3]){
 			quad_roots(args_qr, qr_r);
 			roots[1] = qr_r[0];
 			roots[2] = qr_r[1];
+			roots[0] = n_raph_cub(args, roots[0], 5);
 			return(1);
 		} else if (q3_r2 >= 0){
 			//printf("3 real roots\n");
@@ -121,6 +136,9 @@ int rcubic_roots(double args[3], double roots[3]){
 			roots[0] = min(min(root_1, root_2), min(root_2, root_3));
 			roots[1] = mid(root_1, root_2, root_3);
 			roots[2] = max(max(root_1, root_2), max(root_2, root_3));
+			roots[0] = n_raph_cub(args, roots[0], 5);
+			roots[1] = n_raph_cub(args, roots[1], 5);
+			roots[2] = n_raph_cub(args, roots[2], 5);
 			return(3);
 		}
 	}
