@@ -25,6 +25,7 @@ int lin_root(double args[2], double r1[1]){
 		return(0); // no x will satisfy this
 	} else if (A != 0 && B != 0){
 		r1[0] = -B/A;
+		r1[0] = n_raph_lin(args, r1[0], 5); //N-R sharpening of root
 		return(1);
 	}
 }

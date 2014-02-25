@@ -11,6 +11,7 @@ int quad_roots(double args[3], double roots[2]) {
 	double lr_r[1];
 	double q, a_range, disc, lrg_arg1, lrg_arg2;
 	double maxval = DBL_MAX;
+	//printf("solving quadratic with coefficients a2 = %10.5g\ta1 = %10.5g\ta0 = %10.5g\n", a2, a1, a0);
 	a_range = max(max(a2,a1),max(a1,a0)) - min(min(a2,a1),min(a1,a0)); // dividing through reduces risk of fp overflow
 	// DEBUG PRINTS
 	//printf("max = %.5g\nmin = %.5g\n", max(max(a2,a1),max(a1,a0)), min(min(a2,a1),min(a1,a0)));

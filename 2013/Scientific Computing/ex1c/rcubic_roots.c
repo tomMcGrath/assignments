@@ -14,6 +14,7 @@ int rcubic_roots(double args[3], double roots[3]){
 	a2 = args[2];
 	a1 = args[1];
 	a0 = args[0];
+	//printf("solving cubic with args a2 = %10.5g\ta1 = %10.5g\ta0 = %10.5g\n", a2, a1, a0);
 	q = calcQ(a2, a1);
 	//printf("q: %g\n", q);
 	r = calcR(a2, a1, a0);

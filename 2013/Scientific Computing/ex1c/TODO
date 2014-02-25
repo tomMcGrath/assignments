@@ -10,13 +10,17 @@ ii. Write quartic -> cubic code DONE
 iii. Solve for pair of quads DONE
 iv. Check return values & root ordering DONE
 v. Write improvement cases DONE
-vi. Update sign condition to actually work
+vi. Update sign condition to actually work DONE
+vii. Check accuracy of cubic root, p, q formation NOT NECESSARY
+viii. Write N-R algorithm to sharpen roots DONE
+ix. Add N-R sharpener to each case
 
 q3.
 i. Derive ellipse equation
-ii. Rearrange quartic
-iii. Calculate t and phi
-iv. Plot results
+ii. Rearrange quartic DONE
+iii. Calculate t DONE
+iv. Calculate phi
+v. Plot results
 
 q4.
 i. Calculate height above surface

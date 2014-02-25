@@ -79,3 +79,74 @@ double absval(double v){
 		return(0);
 	}
 }
+
+double n_raph_quart(double args[4], double init, int num_iter){
+	double x;
+	int i;
+	x = init;
+	for(i = 0; i < num_iter; i++){	
+		x = x - (x*x*x*x + args[3]*x*x*x + args[2]*x*x + args[1]*x + args[0])/(4.0*x*x*x + 3.0*args[3]*x*x + 2.0*args[2]*x + args[1]);
+	}
+	return(x);
+}
+
+double n_raph_cub(double args[3], double init, int num_iter){
+	double x;
+	int i;
+	x = init;
+	for(i = 0; i < num_iter; i++){	
+		x = x - (x*x*x + args[2]*x*x + args[1]*x + args[0])/(3.0*x*x + 2.0*args[2]*x + args[1]);
+	}
+	return(x);
+}
+
+double n_raph_quad(double args[3], double init, int num_iter){
+	double x;
+	int i;
+	x = init;
+	for(i = 0; i < num_iter; i++){	
+		x = x - (args[2]*x*x + args[1]*x + args[0])/(2.0*args[2]*x + args[1]);
+	}
+	return(x);
+}
+
+double n_raph_lin(double args[2], double init, int num_iter){
+	double x;
+	int i;
+	x = init;
+	for(i = 0; i < num_iter; i++){	
+		x = x - (args[1]*x + args[0])/(args[1]);
+	}
+	return(x);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

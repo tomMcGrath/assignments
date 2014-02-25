@@ -15,3 +15,7 @@ double amax(double *, int);
 double amin(double *, int);
 double mid(double, double, double);
 double absval(double);
+double n_raph_quart(double [], double, int);
+double n_raph_cub(double [], double, int);
+double n_raph_quad(double [], double, int);
+double n_raph_lin(double [], double, int);
