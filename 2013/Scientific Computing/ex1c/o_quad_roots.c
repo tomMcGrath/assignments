@@ -3,12 +3,12 @@
 #include<float.h>
 #include"header.h"
 
-int quad_roots(double args[3], double roots[3]) {
+int quad_roots(double args[3], double roots[2]) {
 	double a2 = args[2];
 	double a1 = args[1];
 	double a0 = args[0];
 	double lr_args[2];
-	double lr_r[2];
+	double lr_r[1];
 	double q, a_range, disc, lrg_arg1, lrg_arg2;
 	double maxval = DBL_MAX;
 	//printf("solving quadratic with coefficients a2 = %10.5g\ta1 = %10.5g\ta0 = %10.5g\n", a2, a1, a0);
@@ -36,25 +36,25 @@ int quad_roots(double args[3], double roots[3]) {
 		lr_args[1] = args[1];
 		lr_args[0] = args[0];
 		lin_root(lr_args, lr_r);
-		roots[1] = lr_r[1];
-		roots[2] = lr_r[1];
+		roots[0] = lr_r[0];
+		roots[1] = lr_r[0];
 		return(-1);
 	} else if (a0 == 0) { // one root is zero
 		lin_root(lr_args, lr_r);
-		roots[1] = lr_r[1];
-		roots[2] = 0.0;
+		roots[0] = lr_r[0];
+		roots[1] = 0.0;
 		return(2);
 	} else if (a1 == 0 && a0 < 0) { // x^2 = -c
-		roots[1] = sqrt(-a0)/sqrt(a2);
-		roots[2] = -sqrt(-a0)/sqrt(a2);
+		roots[0] = sqrt(-a0)/sqrt(a2);
+		roots[1] = -sqrt(-a0)/sqrt(a2);
 		return(2);
 	} else {
 		disc = a1*a1 - 4.0*a2*a0;
 		// DEBUG PRINT
 		//printf("disc = %.5g\n", disc);
 		if (disc < 0){
-			roots[1] = -a1/(2.0*a2);
-			roots[2] = sqrt(-1.0*disc)/(2.0*a2);
+			roots[0] = -a1/(2.0*a2);
+			roots[1] = sqrt(-1.0*disc)/(2.0*a2);
 			return(0);
 		} else if (disc > 0){
 			if (a1 > 0){
@@ -64,23 +64,13 @@ int quad_roots(double args[3], double roots[3]) {
 			}
 			// DEBUG PRINT
 			//printf("q = %.5g\n", q);	
-			roots[1] = a0/q;
-			roots[2] = q/a2;
+			roots[0] = a0/q;
+			roots[1] = q/a2;
 			return(2);
 		} else if (disc == 0){
+			roots[0] = -a1/(2.0*a2);
 			roots[1] = -a1/(2.0*a2);
-			roots[2] = -a1/(2.0*a2);
 			return(1);
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
