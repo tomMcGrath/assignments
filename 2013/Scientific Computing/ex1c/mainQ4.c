@@ -6,8 +6,14 @@
 int main(void){
 	double args[4];
 	double r[4];
-	double b, Y, X, x, y, d1, d2, dX, dY;
+	double b, Y, X, x, y, d1, d2, dX, dY, theta1, theta2;
 	int rVal;
+	printf("Name: <Tom McGrath>\n");
+	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+	printf("Course Code: <M5SC>\n");
+	printf("Time: %s\n",__TIME__); 
+	printf("Date: %s\n",__DATE__); 
 	// First part of question
 	X = 62997033.307818345/71492000.0;
 	Y = 62997033.307818345/71492000.0;
@@ -29,11 +35,14 @@ int main(void){
 	dY = Y-b*sin(2.0*atan(r[1]));
 	//printf("d1_X = %20.16g\td1_Y = %20.16g\n", dX, dY);
 	d1 = 71492000.0*sqrt(dX*dX + dY*dY);
+	theta1 = atan(dX/dY);
 	dX = X-cos(2.0*atan(r[2]));
 	dY = Y-b*sin(2.0*atan(r[2]));
 	d2 = 71492000.0*sqrt(dX*dX + dY*dY);
+	theta2 = atan(dX/dY);
 	//printf("d2_X = %20.16g\td2_Y = %20.16g\n", dX, dY);
 	printf("d1 = %20.13g\nd2 = %20.13g\n", d1, d2);
+	printf("theta 1 = %20.13g rad\t%20.13g deg\ntheta 2 = %20.13g rad\t%20.13g deg\n", theta1, theta1*180.0/M_PI, theta2, theta2*180.0/M_PI);
 
 	// Second part of question
 	X = 46656362.0/71492000.0;
@@ -54,11 +63,14 @@ int main(void){
 	//d2 = 71492000.0*sqrt( (X-cos(2.0*atan(r[1])))*(X-cos(2.0*atan(r[1]))) + (Y-b*sin(2.0*atan(r[1])))*(Y-b*sin(2.0*atan(r[1]))) );
 	dX = X-cos(2.0*atan(r[1]));
 	dY = Y-b*sin(2.0*atan(r[1]));
+	theta1 = atan(dX/dY);
 	//printf("d1_X = %20.16g\td1_Y = %20.16g\n", dX, dY);
 	d1 = 71492000.0*sqrt(dX*dX + dY*dY);
 	dX = X-cos(2.0*atan(r[2]));
 	dY = Y-b*sin(2.0*atan(r[2]));
+	theta2 = atan(dX/dY);
 	d2 = 71492000.0*sqrt(dX*dX + dY*dY);
 	//printf("d2_X = %20.16g\td2_Y = %20.16g\n", dX, dY);
 	printf("d1 = %20.13g\nd2 = %20.13g\n", d1, d2);
+	printf("theta 1 = %20.13g rad\t%20.13g deg\ntheta 2 = %20.13g rad\t%20.13g deg\n", theta1, theta1*180.0/M_PI, theta2, theta2*180.0/M_PI);
 }

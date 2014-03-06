@@ -9,6 +9,12 @@ int main(void){
 	double b, Y, X;
 	double closest;
 	int rVal;
+	printf("Name: <Tom McGrath>\n");
+	printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+	printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+	printf("Course Code: <M5SC>\n");
+	printf("Time: %s\n",__TIME__); 
+	printf("Date: %s\n",__DATE__); 
 
 	X = 1.0/3.0;
 	Y = 1.0/3.0;

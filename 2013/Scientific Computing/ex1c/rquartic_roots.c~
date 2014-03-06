@@ -136,7 +136,7 @@ int rquartic_roots(double *a, double *roots){
 		if(rVal == 2 && rVal2 == 2){ // 4 real roots, just sort
 			qr[0] = n_raph_quart(a, roots[1],5);
 			qr[1] = n_raph_quart(a, roots[2],5);
-			qr[2] = n_raph_quart(a, roots[3],5); // yes this is a hack to make q3 work, i admit it (more sensible: adjust initial guess based on root density)
+			qr[2] = n_raph_quart(a, roots[3],5);
 			qr[3] = n_raph_quart(a, roots[4],5);
 			qsort(qr, 4, sizeof(double), compare_dbl);
 			roots[1] = qr[0];
@@ -171,11 +171,15 @@ int rquartic_roots(double *a, double *roots){
 			return(0);
 		} else if (rVal == 1 && rVal2 == 2 || rVal == 2 && rVal2 == 1) {
 			//printf("unhandled case in roots");
-			roots[1] = n_raph_quart(a, roots[1],5);
-			roots[2] = n_raph_quart(a, roots[2],5);
-			roots[3] = n_raph_quart(a, roots[3],5);
-			roots[4] = n_raph_quart(a, roots[4],5);
-			qsort(roots, 4, sizeof(double), compare_dbl);
+			qr[0] = n_raph_quart(a, roots[1],5);
+			qr[1] = n_raph_quart(a, roots[2],5);
+			qr[2] = n_raph_quart(a, roots[3],5);
+			qr[3] = n_raph_quart(a, roots[4],5);
+			qsort(qr, 4, sizeof(double), compare_dbl);
+			roots[1] = qr[0];
+			roots[2] = qr[1];
+			roots[3] = qr[2];
+			roots[4] = qr[3];
 			return(4);
 		}
 	} else {

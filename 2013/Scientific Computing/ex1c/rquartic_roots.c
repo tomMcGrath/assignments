@@ -26,10 +26,15 @@ int rquartic_roots(double *a, double *roots){
 			roots[2] = c_roots[1];
 			roots[3] = c_roots[2];
 			roots[4] = c_roots[3];
-			roots[2] = n_raph_quart(a, roots[2],5);
-			roots[3] = n_raph_quart(a, roots[3],5);
-			roots[4] = n_raph_quart(a, roots[4],5);
-			qsort(roots, 4, sizeof(double), compare_dbl);
+			qr[0] = n_raph_quart(a, roots[1],5);
+			qr[1] = n_raph_quart(a, roots[2],5);
+			qr[2] = n_raph_quart(a, roots[3],5);
+			qr[3] = n_raph_quart(a, roots[4],5);
+			qsort(qr, 4, sizeof(double), compare_dbl);
+			roots[1] = qr[0];
+			roots[2] = qr[1];
+			roots[3] = qr[2];
+			roots[4] = qr[3];
 			return(4);
 		} else {
 			if(c_roots[1] > 0.0){
@@ -67,11 +72,15 @@ int rquartic_roots(double *a, double *roots){
 			//printf("special case ii.ii\n");
 			roots[3] = qd_roots[1];
 			roots[4] = qd_roots[2];
-			roots[1] = n_raph_quart(a, roots[1],5);
-			roots[2] = n_raph_quart(a, roots[2],5);
-			roots[3] = n_raph_quart(a, roots[3],5);
-			roots[4] = n_raph_quart(a, roots[4],5);
-			qsort(roots, 4, sizeof(double), compare_dbl);
+			qr[0] = n_raph_quart(a, roots[1],5);
+			qr[1] = n_raph_quart(a, roots[2],5);
+			qr[2] = n_raph_quart(a, roots[3],5);
+			qr[3] = n_raph_quart(a, roots[4],5);
+			qsort(qr, 4, sizeof(double), compare_dbl);
+			roots[1] = qr[0];
+			roots[2] = qr[1];
+			roots[3] = qr[2];
+			roots[4] = qr[3];
 			return(4);
 		}
 	} else if(a[3] == 0.0 && a[2] == 0.0 & a[1] == 0.0){ // special case iii
@@ -171,11 +180,15 @@ int rquartic_roots(double *a, double *roots){
 			return(0);
 		} else if (rVal == 1 && rVal2 == 2 || rVal == 2 && rVal2 == 1) {
 			//printf("unhandled case in roots");
-			roots[1] = n_raph_quart(a, roots[1],5);
-			roots[2] = n_raph_quart(a, roots[2],5);
-			roots[3] = n_raph_quart(a, roots[3],5);
-			roots[4] = n_raph_quart(a, roots[4],5);
-			qsort(roots, 4, sizeof(double), compare_dbl);
+			qr[0] = n_raph_quart(a, roots[1],5);
+			qr[1] = n_raph_quart(a, roots[2],5);
+			qr[2] = n_raph_quart(a, roots[3],5);
+			qr[3] = n_raph_quart(a, roots[4],5);
+			qsort(qr, 4, sizeof(double), compare_dbl);
+			roots[1] = qr[0];
+			roots[2] = qr[1];
+			roots[3] = qr[2];
+			roots[4] = qr[3];
 			return(4);
 		}
 	} else {
@@ -198,11 +211,15 @@ int rquartic_roots(double *a, double *roots){
 		roots[4] = qd_roots[2];
 		//printf("second root pair:\nr3 = %lf\nr3 = %lf\n", qd_roots[1], qd_roots[2]);
 		if(rVal == 2 && rVal2 == 2){ // 4 real roots, just sort
-			roots[1] = n_raph_quart(a, roots[1],5);
-			roots[2] = n_raph_quart(a, roots[2],5);
-			roots[3] = n_raph_quart(a, roots[3],5);
-			roots[4] = n_raph_quart(a, roots[4],5);
-			qsort(roots, 4, sizeof(double), compare_dbl);
+			qr[0] = n_raph_quart(a, roots[1],5);
+			qr[1] = n_raph_quart(a, roots[2],5);
+			qr[2] = n_raph_quart(a, roots[3],5);
+			qr[3] = n_raph_quart(a, roots[4],5);
+			qsort(qr, 4, sizeof(double), compare_dbl);
+			roots[1] = qr[0];
+			roots[2] = qr[1];
+			roots[3] = qr[2];
+			roots[4] = qr[3];
 			return(4);
 		} else if (rVal == 0 && rVal2 != 0){ // first root is complex pair
 			//printf("first pair complex\n");
@@ -231,11 +248,15 @@ int rquartic_roots(double *a, double *roots){
 			return(0);
 		} else if (rVal == 1 && rVal2 == 2 || rVal == 2 && rVal2 == 1) {
 			//printf("unhandled case in roots");
-			roots[1] = n_raph_quart(a, roots[1],5);
-			roots[2] = n_raph_quart(a, roots[2],5);
-			roots[3] = n_raph_quart(a, roots[3],5);
-			roots[4] = n_raph_quart(a, roots[4],5);
-			qsort(roots, 4, sizeof(double), compare_dbl);
+			qr[0] = n_raph_quart(a, roots[1],5);
+			qr[1] = n_raph_quart(a, roots[2],5);
+			qr[2] = n_raph_quart(a, roots[3],5);
+			qr[3] = n_raph_quart(a, roots[4],5);
+			qsort(qr, 4, sizeof(double), compare_dbl);
+			roots[1] = qr[0];
+			roots[2] = qr[1];
+			roots[3] = qr[2];
+			roots[4] = qr[3];
 			return(4);
 		}
 
