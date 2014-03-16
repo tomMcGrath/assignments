@@ -1,0 +1,2 @@
+all:
+	icc q1.c -lm -o q1
