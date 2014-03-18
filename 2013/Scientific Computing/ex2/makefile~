@@ -1,2 +1,3 @@
 all:
-	gcc q1.c -lm -o q1
+	gcc q1.c McGrath.h -lm -o q1
+	gcc test.c -lm -o test

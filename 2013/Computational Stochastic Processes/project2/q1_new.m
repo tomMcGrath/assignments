@@ -26,9 +26,11 @@ for i = 1:numRuns
     end
 end
 
-hold on
-for i = 1:numRuns
-   plot(X(i,:), 'Color', 'green')
-   plot(Y(i,:))
-end
-hold off
+% hold on
+% for i = 1:numRuns
+%    plot(X(i,:), 'Color', 'green')
+%    plot(Y(i,:))
+% end
+% hold off
+
+plot(T,0.5*var(Y)./T)

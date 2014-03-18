@@ -1,9 +1,10 @@
-results = zeros(100,1);
-epsilon = 0.01;
-for i = 1:10
-   results(i) = q2fn(10,0.00001,epsilon);
-   epsilon = epsilon + 0.001;
+clear all
+clc
+results = zeros(10,1);
+T = linspace(1,10,10);
+for i = 1:length(T)
+   results(i) = q2fn(T(i),0.0001,0.01);
    i
 end
 
-plot(results(1:10))
+plot(epsilon,results)

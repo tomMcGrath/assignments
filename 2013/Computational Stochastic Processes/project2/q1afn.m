@@ -1,8 +1,7 @@
-clear all
-clc
+function [ D_T ] = q1afn( kappa, omega )
 
 numRuns = 1000;
-Tmax = 5; dt = 0.001;
+Tmax = 100; dt = 0.01;
 T = linspace(0,Tmax,Tmax/dt);
 dWX = sqrt(dt)*randn(numRuns,length(T)); % vectorise for speed
 dWY = sqrt(dt)*randn(numRuns,length(T));
@@ -11,8 +10,6 @@ Y = zeros(numRuns, length(T));
 D = zeros(1,length(T));
 x0 = 1.0;
 y0 = 1.0;
-kappa = 1;
-omega = 1;
 
 for i = 1:numRuns
     X_j = x0;
@@ -27,14 +24,8 @@ for i = 1:numRuns
     end
 end
 
-% D = var(X)./(2*T);
-% plot(T,D)
+D = var(X)./(2*T);
+D_T = D(length(T));
 
-% hold on
-% for i = 1:numRuns
-%    plot(X(i,:), 'Color', 'green')
-%    plot(Y(i,:))
-% end
-% hold off
+end
 
-plot(T,mean(Y))
