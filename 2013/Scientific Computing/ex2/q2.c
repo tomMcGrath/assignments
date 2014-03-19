@@ -5,10 +5,10 @@
 
 int main(void){
 	double **charge, **psi, **tmp;
-	double dx;
+	double dx, omega;
 	int n, i, j, N, conv, numRuns;
 
-	numRuns = 3;
+	numRuns = 10;
 	N = 8;
 	dx = 1.0/(double)N;
 
@@ -19,8 +19,12 @@ int main(void){
 	// assign values to charge
 	for(i = 0; i <= N; i++){
 		for(j = 0; j <= N; j++){
-			if((i*dx <= 0.25) && (j*dx <= 0.25)){
-				charge[i][j] = 40.0;
+			if((i*dx < 0.25) && (j*dx < 0.25)){
+				charge[i][j] = 100.0;
+			} else if (((i*dx == 0.25) && (j*dx < 0.25)) || ((i*dx < 0.25) && (j*dx == 0.25))){
+				charge[i][j] = 50;
+			} else if ((i*dx == 0.25) && (j*dx == 0.25)){
+				charge[i][j] = 25;
 			}
 		}
 	}
@@ -39,7 +43,7 @@ int main(void){
 		// iterate on this size matrix
 		conv = 0;
 		while(!conv){
-			conv = SOR2D(charge, psi, N);
+			conv = RBSOR2D(charge, psi, N);
 		}
 
 		// write data to file
@@ -57,14 +61,19 @@ int main(void){
 		psi = growMatrix(psi, N);
 		N *= 2;
 		dx = 1.0/(double)N;
+		omega = 2.0 - (2*M_PI)/(double)N;
 
 		//displayMatrix(psi, N);
 
 		// assign values to charge
 		for(i = 0; i <= N; i++){
 			for(j = 0; j <= N; j++){
-				if((i*dx <= 0.25) && (j*dx <= 0.25)){
-					charge[i][j] = 40.0;
+				if((i*dx < 0.25) && (j*dx < 0.25)){
+					charge[i][j] = 100.0;
+				} else if (((i*dx == 0.25) && (j*dx < 0.25)) || ((i*dx < 0.25) && (j*dx == 0.25))){
+					charge[i][j] = 50;
+				} else if ((i*dx == 0.25) && (j*dx == 0.25)){
+					charge[i][j] = 25;
 				}
 			}
 		}
@@ -72,8 +81,72 @@ int main(void){
 		//displayMatrix(charge, N);
 
 		// interpolate psi
-		// WRITE THIS
+		for(i = 1; i <= N; i += 2){
+			for(j = 1; j <= N; j += 2){
+				psi[i][j] = (omega/4.0)*(psi[i-1][j] + psi[i][j-1] + psi[i+1][j] + psi[i][j+1] + dx*dx*charge[i][j]);
+			}
+		}
 	}
+}
+
+int RBSOR2D(double ** charge, double ** psi, int N){
+	double dx, iter, diff, omega;
+	int i, j, conv;
+
+	conv = 1;
+	dx = 1.0/(double)N;
+	omega = 2.0 - (2.0*M_PI)/(double)N;
+
+	// even (red) points
+	for(i = 0; i <= N; i+=2){
+		for(j = 0; j <= N; j+=2){
+			// SOR calculation
+			if((i == 0 || i == N) || (j == 0 || j == N)){
+				psi[i][j] = 0.0;
+				iter = 0.0;
+			} else {
+				iter = psi[i][j] + (omega/4.0)*(psi[i-1][j] + psi[i][j-1] - 4.0*psi[i][j] + psi[i+1][j] + psi[i][j+1] + dx*dx*charge[i][j]);
+				diff = dabs(iter - psi[i][j]);
+				// convergence testing
+				if(conv == 1 && diff < 1e-12){ // sites up till i have converged, site i has converged
+					conv = 1;
+				} else if(conv == 1 && diff > 1e-12){ // sites up till i have converged, but i has not
+					conv = 0;
+				} else if(conv == 0){ // sites up till i have not converged
+					conv = 0;
+				} else {
+					printf("error in convergence code\n");
+				}
+				psi[i][j] = iter;
+			}
+		}
+	}
+
+	// odd (black) points
+	for(i = 1; i <= N; i+=2){
+		for(j = 1; j <= N; j+=2){
+			// SOR calculation
+			if((i == 0 || i == N) || (j == 0 || j == N)){
+				psi[i][j] = 0.0;
+				iter = 0.0;
+			} else {
+				iter = psi[i][j] + (omega/4.0)*(psi[i-1][j] + psi[i][j-1] - 4.0*psi[i][j] + psi[i+1][j] + psi[i][j+1] + dx*dx*charge[i][j]);
+				diff = dabs(iter - psi[i][j]);
+				// convergence testing
+				if(conv == 1 && diff < 1e-12){ // sites up till i have converged, site i has converged
+					conv = 1;
+				} else if(conv == 1 && diff > 1e-12){ // sites up till i have converged, but i has not
+					conv = 0;
+				} else if(conv == 0){ // sites up till i have not converged
+					conv = 0;
+				} else {
+					printf("error in convergence code\n");
+				}
+				psi[i][j] = iter;
+			}
+		}
+	}
+	return(conv);
 }
 
 int SOR2D(double ** charge, double ** psi, int N){
@@ -82,7 +155,7 @@ int SOR2D(double ** charge, double ** psi, int N){
 
 	conv = 1;
 	dx = 1.0/(double)N;
-	omega = 2 - (2*M_PI)/(double)N;
+	omega = 2.0 - (2.0*M_PI)/(double)N;
 
 	for(i = 0; i <= N; i++){
 		for(j = 0; j <= N; j++){
@@ -114,12 +187,11 @@ int writeMatrix(double **M, int len, char *path){
 	FILE *writeFile;
 	int i, j;
 	
-	writeFile = fopen(path, "a");
+	writeFile = fopen(path, "w");
 	printf("File opened OK\n");
-	fprintf(writeFile, "# N = %d\n", len);
 	for(i = 0; i <= len; i++){
 		for(j = 0; j <= len; j++){
-			fprintf(writeFile, "%10.8g,", M[i][j]);
+			fprintf(writeFile, "%g,", M[i][j]);
 		}
 	fprintf(writeFile, "\n");
 	}
