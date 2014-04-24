@@ -1,0 +1,17 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+
+int main(void){
+  int N;
+  double *x;
+
+}
+
+int test(*x, N){
+  int i;
+
+  for(i=0;i<=N;i++){
+    x[i] = i;
+  }
+}

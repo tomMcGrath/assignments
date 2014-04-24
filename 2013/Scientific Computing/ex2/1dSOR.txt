@@ -1,0 +1,3 @@
+       N,   max psi r,   x max psi,   max psi s,  psi=0 time,    # sweeps,  psi prev t,      sweeps,      t best,      sweeps
+       8	     1.40625,       0.125,      0.9375,           0,         100,           0         102,           0,         100
+      16	     1.17187,       0.125,      0.9375,           0,         131,           0         125,           0,           1

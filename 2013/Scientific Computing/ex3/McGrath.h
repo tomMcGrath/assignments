@@ -1,0 +1,11 @@
+double* SFactors(int);
+double **make_matrix(int,int);
+double **matrix_multiply(double **, double **, int, int, int, int);
+double *mv_multiply(double **M, double *V, int m, int n, int k);
+void displayMatrix(double **, int);
+int FastSN(double *x, double *y, double *w, double *S, int N, int skip);
+int FastTN(double *x, double *y, double *w, double *S, int N, int skip);
+int SlowSN(double *x, double *y, double *w, double *S, int N, int skip);
+int SlowTN(double *x, double *y, double *w, double *S, int N, int skip);
+int SlowUN(double *x, double *y, double *w, double *S, int N, int skip);
+void displayVector(double *, int);

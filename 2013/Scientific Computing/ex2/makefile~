@@ -2,19 +2,36 @@ all:
 	gcc q1.c McGrath.h -lm -o q1
 	gcc q2.c McGrath.h -lm -o q2
 	gcc q3.c McGrath.h -lm -o q3
+	gcc q4.c McGrath.h -lm -o q4
 	gcc test.c -lm -o test
 
 mc:
 	gcc q1.c McGrath.h -lm -o q1 -fopenmp
 	gcc q2.c McGrath.h -lm -o q2 -fopenmp
 	gcc q3.c McGrath.h -lm -o q3 -fopenmp
+	gcc q4.c McGrath.h -lm -o q4 -fopenmp
 	gcc test.c -lm -o test -fopenmp
 
 mcdb:
 	gcc q1.c McGrath.h -lm -o q1 -fopenmp -g
 	gcc q2.c McGrath.h -lm -o q2 -fopenmp -g
 	gcc q3.c McGrath.h -lm -o q3 -fopenmp -g
-	gcc test.c -lm -o test -fopenmp -g
+	gcc q4.c McGrath.h -lm -o q4 -fopenmp -g
+	test gcc.c -lm -o test -fopenmp -g
+
+mcoptgen:
+	icc q1.c McGrath.h -lm -o q1 -fopenmp -O3
+	icc q2.c McGrath.h -lm -o q2 -fopenmp -O3
+	icc q3.c McGrath.h -lm -o q3 -fopenmp -O3
+	icc q4.c McGrath.h -lm -o q4 -fopenmp -O3
+	icc test.c -lm -o test -fopenmp -O3
+
+mcopt:
+	icc q1.c McGrath.h -lm -o q1 -fopenmp -O3 -xSSE4.2
+	icc q2.c McGrath.h -lm -o q2 -fopenmp -O3 -xSSE4.2
+	icc q3.c McGrath.h -lm -o q3 -fopenmp -O3 -xSSE4.2
+	icc q4.c McGrath.h -lm -o q4 -fopenmp -O3 -xSSE4.2
+	icc test.c -lm -o test -fopenmp -O3 -xSSE4.2
 
 opt:
 	icc q1.c McGrath.h -lm -o q1 -O3

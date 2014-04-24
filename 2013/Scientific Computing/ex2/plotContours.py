@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 #t = np.loadtxt("SOR2D.txt", delimiter = "\t")
 
 t = []
-inFile = open("SOR2D.txt", "r")
+inFile = open("MQtest.txt", "r")
 data = inFile.read()
 data = data.split("\n")
 for line in data[:-1]:
