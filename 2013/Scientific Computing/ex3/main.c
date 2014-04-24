@@ -12,8 +12,8 @@ int main(void){
   // TODO
   // - debug recursive call of SN - probably done now but needs checking. Works for N=4
   // - debug TN - done
-  // - debug UN
-  // - use SFactors to return values in base case, FastUN
+  // - debug UN - the problem is in reassembling the values
+  // - use SFactors to return values in base case, FastTN, FastUN
 
   N=4;
   y = (double*)malloc((N-1)*sizeof(double));
@@ -128,8 +128,18 @@ int FastSN(double *x, double *y, double *w, double *S, int N, int skip){
 
 int FastTN(double *x, double *y, double *w, double *S, int N, int skip){
   int i,j;
+  double y1,y2;
   if(N==2){
     // don't factor down any further - just do the multiplication
+    printf("Base case for FastTN\n");
+    y1 = y[skip];
+    y2 = y[2*skip];
+    printf("y[%d] = %lf\ty[%d] = %lf\n", skip, y[skip], 2*skip, y[2*skip]);
+    x[skip] = 0.5*sqrt(2)*y1 + y2;
+    x[2*skip] = 0.5*sqrt(2)*y1 - y2;
+    printf("x[%d] = %lf\tx[%d] = %lf\n", skip, x[skip], 2*skip, x[2*skip]);
+    /*
+    // This is the old version, delete once it's working
     printf("Base case for FastTN\n");
     printf("y[%d] = %lf\ty[%d] = %lf\n",skip, y[skip], 2*skip, y[2*skip]);
     x[skip] = 0.5*sqrt(2)*y[skip]+y[2*skip];
@@ -138,6 +148,7 @@ int FastTN(double *x, double *y, double *w, double *S, int N, int skip){
     printf("x[%d] = %lf + %lf\n", 2*skip, 0.5*sqrt(2)*y[skip], y[2*skip]);
     printf("x[%d] = %lf\n", 2*skip, x[2*skip]);
     //printf("x[%d] = %lf\tx[%d] = %lf\n", skip, x[skip], 2*skip, x[2*skip]);
+    */
     return(0);
   } else if (N==1) {
     // the base case for recursion - this shouldn't happen with powers of 2
@@ -217,7 +228,7 @@ int FastUN(double *x, double *y, double *w, double *S, int N, int skip){
     printf("work array before reassembling:\n");
     displayVector(w,N);
     // reassemble into x
-    for(i=1;i<N/2;i++){
+    for(i=1;i<=N/2;i++){
       if(i%2==0){ // even, so sign factors are negative
       x[i*skip] = -1.0*sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[i*skip] + sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[(i+1)*skip];
       x[N+1-(i*skip)] = -1.0*sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[i*skip] - sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[(i+1)*skip];
