@@ -12,7 +12,7 @@ int main(void){
   // TODO
   // - debug recursive call of SN - probably done now but needs checking. Works for N=4
   // - debug TN - done
-  // - debug UN - the problem is in reassembling the values
+  // - debug UN - need to fix assignment to work array
   // - use SFactors to return values in base case, FastTN, FastUN
 
   N=4;
@@ -229,14 +229,28 @@ int FastUN(double *x, double *y, double *w, double *S, int N, int skip){
     displayVector(w,N);
     // reassemble into x
     for(i=1;i<=N/2;i++){
-      if(i%2==0){ // even, so sign factors are negative
-      x[i*skip] = -1.0*sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[i*skip] + sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[(i+1)*skip];
-      x[N+1-(i*skip)] = -1.0*sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[i*skip] - sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[(i+1)*skip];
+      printf("i = %d\n", i);
+      if(i%2==0){ // even, so sign factors are negative - need to move reference to work array along by skip
+	x[i*skip] = -1.0*sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[skip+(i*skip)] + sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[skip+((i+1)*skip)];
+	printf("x[%d] = -f1*w[%d] + f2*w[%d]\n", i*skip, skip+(i*skip), skip+((i+1)*skip));
+	printf("x[%d]=-1*%lf*%lf + %lf*%lf\n", i*skip, sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N)), w[skip+(i*skip)], sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N)), w[skip+((i+1)*skip)]);
+	printf("x[%d] = %lf\n", i*skip, x[i*skip]);
+
+	x[N+1-(i*skip)] = -1.0*sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[skip+(i*skip)] - sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[skip+((i+1)*skip)];
+	printf("x[%d] = -f3*w[%d] - f4*w[%d]\n", (N+1)-(i*skip), skip+(i*skip), skip+((i+1)*skip));
+	printf("x[%d]=-1*%lf*%lf - %lf*%lf\n", (N+1)-(i*skip), sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N)), w[skip+(i*skip)], sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N)), w[skip+((i+1)*skip)]);
+	printf("x[%d] = %lf\n", (N+1)-(i*skip), x[(N+1) - (i*skip)]);
       } else if (i%2==1) { // odd, so sign factors are positive
 	x[i*skip] = sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[i*skip] + sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[(i+1)*skip];
-      x[N+1-(i*skip)] = sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[i*skip] - sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[(i+1)*skip];
-      }
+	printf("x[%d] = f1*w[%d] + f2*w[%d]\n", i*skip, i*skip, (i+1)*skip);
+	printf("x[%d] = %lf*%lf + %lf*%lf\n", i*skip, sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N)), w[i*skip], sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N)), w[(i+1)*skip]);
+	printf("x[%d] = %lf\n", i*skip, x[i*skip]);
 
+	x[N+1-(i*skip)] = sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[i*skip] - sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[(i+1)*skip];
+	printf("x[%d] = f3*w[%d] + f3*w[%d]\n", (N+1)-(i*skip), i*skip, (i+1)*skip);
+	printf("x[%d] = %lf*%lf - %lf*%lf\n", (N+1)-(i*skip), sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N)), w[i*skip], sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N)), w[(i+1)*skip]);
+	printf("x[%d] = %lf\n", (N+1)-(i*skip), x[(N+1) - (i*skip)]);
+      }
     }
   } else {
     // just brute-force multiply
@@ -302,12 +316,10 @@ int SlowUN(double *x, double *y, double *w, double *S, int N, int skip){
   }
 
   x = mv_multiply(UN,y,N,N,N);
-  /*
   printf("UN matrix:\n");
   displayMatrix(UN,N);
   printf("y:\n");
   displayVector(y,N);
-  */
   printf("x:\n");
   displayVector(x,N);
 
