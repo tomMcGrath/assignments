@@ -7,15 +7,18 @@ int main(void){
   // matrix convention: start from 1,1 (blanks in (0,j) and (i,0))
   double **ans;
   double *x, *y, *w, *S;
-  int i,j,N;
+  int i,j,N,initN;
 
   // TODO
-  // - debug recursive call of SN - probably done now but needs checking. Works for N=4
-  // - debug TN - done
-  // - debug UN - need to fix assignment to work array
-  // - use SFactors to return values in base case, FastTN, FastUN
+  // write x,y,w printing program - done
+  // fix assignment of values to work array to work from N>4
+  // current progress: FastSN calls itself correctly, the right hand side of the S8 tree works
+  // work array allocation in FastTN is not correct
+  // work array allocation in FastUN is not tested
+  // update FastSN, FastTN and FastUN to use SFactors
 
-  N=4;
+  N=8;
+  initN = N;
   y = (double*)malloc((N-1)*sizeof(double));
   x = (double*)malloc((N-1)*sizeof(double));
   w = (double*)malloc(N*sizeof(double));
@@ -34,10 +37,11 @@ int main(void){
   SlowUN(x,y,w,S,N,1);
   */
 
-  /*
+  
   printf("TESTING FastSN:\n");
   printf("running FastSN\n");
   FastSN(x,y,w,S,N,1);
+  printf("Result from FastSN\n");
   displayVector(x,N-1);
 
   printf("running SlowSN\n");
@@ -46,9 +50,8 @@ int main(void){
     y[i] = i;
   }
   SlowSN(x,y,w,S,N,1);
-  // displayVector(x,N-1);
-  */
-
+  //displayVector(x,N-1);
+  
   /*
   printf("TESTING FastTN:\n");
   printf("running FastTN:\n");
@@ -68,7 +71,7 @@ int main(void){
   SlowTN(x,y,w,S,N,1);
   */
 
-  
+  /*
   printf("TESTING FastUN:\n");
   printf("running FastUN:\n");
   for(i=1;i<=N;i++){
@@ -85,7 +88,31 @@ int main(void){
     y[i] = i;
   }
   SlowUN(x,y,w,S,N,1);
+  */
   
+  /*
+  printf("Testing intermediate T4\n");
+  for(i=1;i<4;i++){
+    x[i] = 0.0;
+    y[i] = 8.0;
+  }
+  y[4] = 4.0;
+  SlowTN(x,y,w,S,4,1);
+
+  printf("Testing base T2\n");
+  x[1] = 0.0;
+  x[2] = 0.0;
+  y[1] = 8.0;
+  y[2] = 4.0;
+  SlowTN(x,y,w,S,2,1);
+
+  printf("Testing base U2\n");
+  x[1] = 0.0;
+  x[2] = 0.0;
+  y[1] = 8.0;
+  y[2] = 8.0;
+  SlowUN(x,y,w,S,2,1);
+  */
 
   return(0);
 }
@@ -97,25 +124,50 @@ int FastSN(double *x, double *y, double *w, double *S, int N, int skip){
     // the base case for recursion
     printf("Base case for FastSN\n");
     x[skip] = y[skip]; // should this be skip or 1?
+    displayXYW(x,y,w,(N*skip)-1);
     return(0);
   } else if(N%2==0) {
     // recursive block
     // store s and a in the work array
-    for(i=1;i<(N/2);i+=2){
-      w[i] = y[i] + y[N-i]; // s values
-      printf("s value w[%d] = %lf\n", i, w[i]);
+
+    printf("data before processing:\n");
+    for(i=1;i<N;i++){
+      printf("[%lf]\n", y[i*skip]);
     }
-    w[N-1] = y[N/2]; // central s value
-    printf("w[%d] = %lf\n", N-1, w[N-1]);
-    for(i=1;i<=N/2;i+=2){
-      w[i+1] = y[i] - y[N-i]; // a values
-      printf("a value w[%d] = %lf - %lf\n", i, y[i], y[N-i]);
+
+    for(i=1;i<=N/2;i++){
+      if(i!=N/2){
+	printf("i = %d\n", i);
+	w[(2*i*skip)-skip] = y[i*skip] + y[(N-i)*skip]; // s components
+	w[2*i*skip] = y[i*skip] - y[(N-i)*skip]; // a components
+
+	printf("w[%d] = y[%d] + y[%d] = %lf + %lf = %lf\n", (2*i*skip)-1, i*skip, (N-i)*skip, y[i*skip], y[(N-i)*skip],w[(2*i*skip)-skip]);
+	printf("w[%d] = y[%d] - y[%d] = %lf - %lf = %lf\n", 2*i*skip, i*skip, (N-i)*skip, y[i*skip], y[(N-i)*skip],w[(2*i*skip)]);
+      }
     }
+
+    w[(N-1)*skip] = y[(N/2)*skip];
+    printf("w[%d] = y[%d] = %lf\n", (N-1)*skip, (N/2)*skip, y[(N/2)*skip]);
+
+    /*
+    // incorrect code, delete when fixed
+    w[(N-1)*skip] = y[(N-1)*skip]; // not correct!
+    printf("w[%d] = y[%d] = %lf\n", (N-1)*skip, (N-1)*skip, y[(N-1)*skip]);
+    */
+    printf("work array after processing:\n");
+    for(i=1;i<N;i++){
+      printf("[%lf]\n", w[i*skip]);
+    }
+
+    displayXYW(x,y,w,(N*skip)-1);
+
     // now call FastSN and FastTN recursively - need to ensure that the correct part of w is used!
     printf("FastSN calling FastSN with N = %d\n", N/2);
     FastSN(x,w,y,S,N/2,skip*2);
     printf("FastSN calling FastTN with N = %d\n", N/2);
-    FastTN(x-skip,w-skip,y-skip,S,N/2,skip*2);
+    FastTN(x-skip,w-skip,y-skip,S,N/2,skip*2); // should this be x-skip, y-skip, w-skip?
+    printf("vectors after recursion in FastSN with N=%d\n", N);
+    displayXYW(x,y,w,(N*skip)-1);
   } else {
     // this happens if we can go no further - our initial N was not a power of 2
     for(i=1;i<=N;i++){
@@ -132,12 +184,15 @@ int FastTN(double *x, double *y, double *w, double *S, int N, int skip){
   if(N==2){
     // don't factor down any further - just do the multiplication
     printf("Base case for FastTN\n");
+    displayXYW(x,y,w,(N*skip)-1);
     y1 = y[skip];
     y2 = y[2*skip];
     printf("y[%d] = %lf\ty[%d] = %lf\n", skip, y[skip], 2*skip, y[2*skip]);
     x[skip] = 0.5*sqrt(2)*y1 + y2;
     x[2*skip] = 0.5*sqrt(2)*y1 - y2;
     printf("x[%d] = %lf\tx[%d] = %lf\n", skip, x[skip], 2*skip, x[2*skip]);
+    printf("arrays after base case with N = %d\n", N);
+    displayXYW(x,y,w,(N*skip)-1);
     /*
     // This is the old version, delete once it's working
     printf("Base case for FastTN\n");
@@ -157,18 +212,45 @@ int FastTN(double *x, double *y, double *w, double *S, int N, int skip){
   } else if (N%2==0) {
     // the recursive case
     // do FastTN on the even numbers - note reversal of w & y
+    printf("Recursive step in FastTN with N = %d\n", N);
+    displayXYW(x,y,w,(N*skip)-1);
+    printf("work array elements\n");
+    for(i=1;i<=N;i++){
+      printf("w[%d] = %lf\n", i*skip, w[i*skip]);
+    }
     printf("FastTN calling FastTN with N = %d\n", N/2);
     FastTN(w,y,w,S,N/2,skip*2);
     // do FastUN on the odd numbers - reversal of w & y here as well
     printf("FastTN calling FastUN with N = %d\n", N/2);
     FastUN(w-skip,y-skip,w-skip,S,N/2,skip*2);
     // add the z's back together from the work array
-    printf("Work array:\n");
-    displayVector(w,N);
+    //printf("Work array:\n");
+    //displayVector(w,N);
+    printf("arrays before reassembly\n"); // this is where the issue is - work array values are correct
+    displayXYW(x,y,w,(N*skip)-1);
+
+    for(i=1;i<=N;i++){
+x[i*skip] = w[i*skip]
+    }
+    /*
+    // test code please delete - this shows the recursive elements are correct at least for S8
+    for(i=1;i<=8;i++){
+      printf("w[%d] = %lf\n", i, w[i]);
+    }
+    x[2] = w[2] + w[4];
+    x[4] = w[6] + w[8];
+    x[6] = w[6] - w[8];
+    x[8] = w[2] - w[4];
+    */
+    /*
+    // wrong code, delete when fixed
     for(i=1;i<=N/2;i++){
       x[i] = w[(2*i)-1] + w[2*i];
       x[N+1-i] = w[(2*i)-1] - w[2*i];
     }
+    */
+    printf("arrays after reassembly\n");
+    displayXYW(x,y,w,(N*skip)-1);
   } else {
     // we can go no further - initial N was not a power of 2
     // just brute-force multiply
@@ -182,10 +264,13 @@ int FastUN(double *x, double *y, double *w, double *S, int N, int skip){
   if(N==2){
     // don't factor down any further - multiply - can SFactors help here?
     printf("Base case for FastUN\n");
+    displayXYW(x,y,w,(N*skip)-1);
     printf("y[%d] = %lf\ty[%d] = %lf\n",skip, y[skip], 2*skip, y[2*skip]);
     x[skip] = 0.5*(sqrt(2-sqrt(2)))*y[skip] + 0.5*(sqrt(2+sqrt(2)))*y[2*skip];
     x[2*skip] = 0.5*(sqrt(2+sqrt(2)))*y[skip] - 0.5*sqrt(2-sqrt(2))*y[2*skip];
     printf("x[%d] = %lf\tx[%d] = %lf\n", skip, x[skip], 2*skip, x[2*skip]);
+    printf("Arrays after base case of UN with N = %d\n", N);
+    displayXYW(x,y,w,(N*skip)-1);
     return(0);
   } else if (N==1) {
     // recursion base case
@@ -196,29 +281,22 @@ int FastUN(double *x, double *y, double *w, double *S, int N, int skip){
     // preprocess to u and v - store in work array - do these need to be skip?
     
     // this is just to test U4 - delete it!
+    /*
     w[1] = y[3] - y[2];
     w[2] = y[2] + y[3];
     w[3] = y[1];
     w[4] = y[4];
-
-    /*
-    for(i=1;i<N;i+=2){
-      w[i] = y[N+1-2*i]-y[N-2*i]; // store u in odd numbers
-      printf("w[%d] = %lf\n", i, w[i]);
-    }
-    w[N/2] = y[1];
-    printf("w[%d] = %lf\n", N/2, w[N/2]);
-
-    for(i=2;i<N;i+=2){
-      w[i] = y[2*i] + y[2*i+1]; // store v in even numbers
-      printf("w[%d] = %lf\n", i, w[i]);
-    }
-    w[N] = y[N];
-    printf("w[%d] = %lf\n", N, w[N]);
     */
 
+    for(i=1;i<N/2;i++){
+      w[i*skip] = y[(N+1)-(2*i*skip)] - y[N-(2*i*skip)];
+      w[skip+(i*skip)] = y[2*i*skip] + y[1+(2*i*skip)]; // should the w[skip+(i*skip)] term be w[1+(i*skip)]?
+    }
+    w[(N-skip)+1] = y[skip]; // these two may be wrong also
+    w[N] = y[N];
+
     printf("work array:\n");
-    displayVector(w,N);
+    //displayXYW(x,y,w,N*skip);
     // do FastTN on u and v for a and b
     printf("FastUN calling FastTN with N = %d\n", N/2);
     FastTN(w,w,x,S,N/2,skip*2);
@@ -226,19 +304,19 @@ int FastUN(double *x, double *y, double *w, double *S, int N, int skip){
     FastTN(w-skip,w-skip,x-skip,S,N/2,skip*2);
 
     printf("work array before reassembling:\n");
-    displayVector(w,N);
+    //displayXYW(x,y,w,N*skip);
     // reassemble into x
     for(i=1;i<=N/2;i++){
       printf("i = %d\n", i);
-      if(i%2==0){ // even, so sign factors are negative - need to move reference to work array along by skip
-	x[i*skip] = -1.0*sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[skip+(i*skip)] + sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[skip+((i+1)*skip)];
-	printf("x[%d] = -f1*w[%d] + f2*w[%d]\n", i*skip, skip+(i*skip), skip+((i+1)*skip));
-	printf("x[%d]=-1*%lf*%lf + %lf*%lf\n", i*skip, sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N)), w[skip+(i*skip)], sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N)), w[skip+((i+1)*skip)]);
+      if(i%2==0){ // even, so sign factors are negative - need to move reference to work array along by skip - or 1?
+	x[i*skip] = -1.0*sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[1+(i*skip)] + sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[1+((i+1)*skip)];
+	printf("x[%d] = -f1*w[%d] + f2*w[%d]\n", i*skip, 1+(i*skip), 1+((i+1)*skip));
+	printf("x[%d]=-1*%lf*%lf + %lf*%lf\n", i*skip, sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N)), w[1+(i*skip)], sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N)), w[1+((i+1)*skip)]);
 	printf("x[%d] = %lf\n", i*skip, x[i*skip]);
 
-	x[N+1-(i*skip)] = -1.0*sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[skip+(i*skip)] - sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[skip+((i+1)*skip)];
-	printf("x[%d] = -f3*w[%d] - f4*w[%d]\n", (N+1)-(i*skip), skip+(i*skip), skip+((i+1)*skip));
-	printf("x[%d]=-1*%lf*%lf - %lf*%lf\n", (N+1)-(i*skip), sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N)), w[skip+(i*skip)], sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N)), w[skip+((i+1)*skip)]);
+	x[N+1-(i*skip)] = -1.0*sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[1+(i*skip)] - sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[1+((i+1)*skip)];
+	printf("x[%d] = -f3*w[%d] - f4*w[%d]\n", (N+1)-(i*skip), 1+(i*skip), 1+((i+1)*skip));
+	printf("x[%d]=-1*%lf*%lf - %lf*%lf\n", (N+1)-(i*skip), sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N)), w[1+(i*skip)], sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N)), w[1+((i+1)*skip)]);
 	printf("x[%d] = %lf\n", (N+1)-(i*skip), x[(N+1) - (i*skip)]);
       } else if (i%2==1) { // odd, so sign factors are positive
 	x[i*skip] = sin(((2.0*(double)i-1)*M_PI)/(4.0*(double)N))*w[i*skip] + sin(((2.0*(double)N+1-2.0*(double)i)*M_PI)/(4.0*(double)N))*w[(i+1)*skip];
@@ -252,6 +330,8 @@ int FastUN(double *x, double *y, double *w, double *S, int N, int skip){
 	printf("x[%d] = %lf\n", (N+1)-(i*skip), x[(N+1) - (i*skip)]);
       }
     }
+    printf("Work array after reassembly\n");
+    //displayXYW(x,y,w,N*skip);
   } else {
     // just brute-force multiply
     SlowUN(x,y,w,S,N,skip);
@@ -316,10 +396,12 @@ int SlowUN(double *x, double *y, double *w, double *S, int N, int skip){
   }
 
   x = mv_multiply(UN,y,N,N,N);
+  /*
   printf("UN matrix:\n");
   displayMatrix(UN,N);
   printf("y:\n");
   displayVector(y,N);
+  */
   printf("x:\n");
   displayVector(x,N);
 
@@ -405,5 +487,14 @@ void displayVector(double *V, int len){
 
   for(i=1;i<=len;i++){
     printf("%5.5g\n", V[i]);
+  }
+}
+
+void displayXYW(double *x, double *y, double *w, int N){
+  int i;
+
+  printf("Arrays in order x,y,w\n");
+  for(i=1;i<=N;i++){
+    printf("[%lf]\t[%lf]\t[%lf]\n", x[i], y[i], w[i]);
   }
 }

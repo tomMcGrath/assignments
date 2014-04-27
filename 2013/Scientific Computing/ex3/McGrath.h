@@ -9,3 +9,4 @@ int SlowSN(double *x, double *y, double *w, double *S, int N, int skip);
 int SlowTN(double *x, double *y, double *w, double *S, int N, int skip);
 int SlowUN(double *x, double *y, double *w, double *S, int N, int skip);
 void displayVector(double *, int);
+void displayXYW(double *x, double *y, double *w, int N);
