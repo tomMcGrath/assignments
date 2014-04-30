@@ -1,2 +1,9 @@
 all:
-	gcc main.c McGrath.h -lm -o q1
+	gcc main.c functions.c McGrath.h -lm -o q1
+	gcc q5.c functions.c  McGrath.h -lm -o q5
+
+debug:
+	gcc main.c McGrath.h -lm -o -g q1
+
+opt:
+	icc main.c McGrath.h -lm -o q1 -O3

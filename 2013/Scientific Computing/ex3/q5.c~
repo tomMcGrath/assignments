@@ -1,0 +1,88 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+#include<time.h>
+#include"McGrath.h"
+
+int main(void){
+  // matrix convention: start from 1,1 (blanks in (0,j) and (i,0))
+  double **ans;
+  double *x, *y, *w, *S;
+  double **rho, **psi, *temp1, *temp2;
+  double dx;
+  int i,j,N;
+
+  N=8;
+  dx = 1.0/(double)N;
+
+  rho = make_matrix(N,N);
+  psi = make_matrix(N,N);
+  temp1 = (double*)malloc(N*sizeof(double));
+  temp2 = (double*)malloc(N*sizeof(double));
+  w = (double*)malloc(N*sizeof(double));
+  S = (double*)malloc(N*sizeof(double));
+  S = SFactors(N);
+
+  // define rho
+  printf("defining rho\n");
+  defineQ5(rho, N);
+  //displayMatrix(rho, N);
+
+  // transform rows first - should it be ij or ji?
+  printf("transforming rows\n");
+  for(i=1;i<N;i++){
+    for(j=1;j<N;j++){
+      temp1[j] = rho[i][j];
+    }
+    FastSN(temp2,temp1,w,S,N,1);
+    for(j=1;j<N;j++){
+      rho[i][j] = temp2[j];
+    }
+  }
+
+  // now transform columns
+  printf("transforming columns\n");
+  for(i=1;i<N;i++){
+    for(j=1;j<N;j++){
+      temp1[j] = rho[j][i];
+    }
+    FastSN(temp2,temp1,w,S,N,1);
+    for(j=1;j<N;j++){
+      rho[j][i] = temp2[j];
+    }
+  }
+
+  // calculate psi from rho
+  printf("calculating psi from rho\n");
+  calcPsiGood2D(rho, psi, N);
+
+  // transform rows back
+  printf("transforming rows back\n");
+  for(i=1;i<N;i++){
+    for(j=1;j<N;j++){
+      temp1[j] = psi[j][i];
+    }
+    FastSN(temp2,temp1,w,S,N,1);
+    for(j=1;j<N;j++){
+      psi[j][i] = temp2[j];
+    }
+  }
+
+  // now transform columns
+  printf("transforming columns back\n");
+  for(i=1;i<N;i++){
+    for(j=1;j<N;j++){
+      temp1[j] = psi[i][j];
+    }
+    FastSN(temp2,temp1,w,S,N,1);
+    for(j=1;j<N;j++){
+      psi[i][j] = temp2[j];
+    }
+  }
+
+  // display/write result
+  printf("writing result to disk\n");
+  displayMatrix(psi,N);
+  //writeMatrix(psi, N, "q5.txt");
+}
+

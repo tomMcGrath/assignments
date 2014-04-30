@@ -1,174 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
+#include<time.h>
 #include"McGrath.h"
-
-int main(void){
-  // matrix convention: start from 1,1 (blanks in (0,j) and (i,0))
-  double **ans;
-  double *x, *y, *w, *S;
-  int i,j,N;
-
-  // TODO
-  // write x,y,w printing program - done
-  // fix assignment of values to work array to work from N>4
-  // current progress: S8 works, S16 segfaults - problem is in FastUN work array assembly and reassembly references going negative
-  // work array allocation in FastUN is not tested
-  // update FastSN, FastTN and FastUN to use SFactors
-
-  N=16777216;
-
-  y = (double*)malloc((N-1)*sizeof(double));
-  x = (double*)malloc((N-1)*sizeof(double));
-  w = (double*)malloc(N*sizeof(double));
-  S = (double*)malloc(N*sizeof(double));
-  S = SFactors(N);
-  //displayVector(S, (N/2)-1);
-  for(i=1;i<=N;i++){
-    y[i] = i;
-  }
-
-  // testing code
-  /*
-  //printf("Running SlowSN\n");
-  SlowSN(x,y,w,S,N,1);
-  //printf("Running SlowTN\n");
-  SlowTN(x,y,w,S,N,1);
-  //printf("Running SlowUN\n");
-  SlowUN(x,y,w,S,N,1);
-  */
-
-  
-  printf("TESTING FastSN:\n");
-  printf("running FastSN\n");
-  FastSN(x,y,w,S,N,1);
-  //printf("Result from FastSN\n");
-  //displayVector(x,N-1);
-
-  /*
-  //printf("running SlowSN\n");
-  for(i=1;i<N;i++){
-    x[i] = 0;
-    y[i] = i;
-  }
-  SlowSN(x,y,w,S,N,1);
-  ////displayVector(x,N-1);
-  */
-    
-
-  /*
-  //printf("TESTING FastTN:\n");
-  //printf("running FastTN:\n");
-  for(i=1;i<=N;i++){
-    x[i] = 0;
-    y[i] = i;
-  }
-  FastTN(x,y,w,S,N,1);
-  //printf("Results from FastTN:\n");
-  //displayVector(x,N);
-
-  //printf("running SlowTN:\n");
-  for(i=1;i<=N;i++){
-    x[i] = 0;
-    y[i] = i;
-  }
-  SlowTN(x,y,w,S,N,1);
-  */
-
-  /*
-  //printf("TESTING FastUN:\n");
-  //printf("running FastUN:\n");
-  for(i=1;i<=N;i++){
-    x[i] = 0;
-    y[i] = i;
-  }
-  FastUN(x,y,w,S,N,1);
-  //printf("Result from FastUN\n");
-  //displayVector(x,N);
-
-  //printf("running SlowUN:\n");
-  for(i=1;i<=N;i++){
-    x[i] = 0;
-    y[i] = i;
-  }
-  SlowUN(x,y,w,S,N,1);
-  */
-
-  /*
-  //printf("Testing intermediate T8\n");
-  for(i=1;i<8;i++){
-    x[i] = 0.0;
-    y[i] = 16.0;
-  }
-  y[8] = 8.0;
-  SlowTN(x,y,w,S,8,1);
-
-  //printf("Testing intermediate U4\n");
-  for(i=1;i<=4;i++){
-    y[i] = 16.0;
-  }
-  FastUN(x,y,w,S,4,1);
-  for(i=1;i<=4;i++){
-    y[i] = 16.0;
-  }
-  SlowUN(x,y,w,S,4,1);
-
-  //printf("Testing base T2\n");
-  y[1] = 32.0;
-  y[2] = 16.0;
-  SlowTN(x,y,w,S,2,1);  
-  */
-
-  /*
-  //printf("Testing intermediate T4\n");
-  for(i=1;i<4;i++){
-    x[i] = 0.0;
-    y[i] = 8.0;
-  }
-  y[4] = 4.0;
-  SlowTN(x,y,w,S,4,1);
-
-  //printf("Testing base T2\n");
-  x[1] = 0.0;
-  x[2] = 0.0;
-  y[1] = 8.0;
-  y[2] = 4.0;
-  SlowTN(x,y,w,S,2,1);
-
-  //printf("Testing base U2\n");
-  x[1] = 0.0;
-  x[2] = 0.0;
-  y[1] = 8.0;
-  y[2] = 8.0;
-  SlowUN(x,y,w,S,2,1);
-  */
-
-  /*
-  //printf("Testing intermediate U4 with N = 4, skip = 4, x,y,w offset by 3\n");
-  N = 16;
-  for(i=0;i<N;i++){
-    x[i] = 0;
-    w[i] = 0;
-    if(i%2==0){
-      y[i] = 0;
-    } else {
-      y[i] = 16;
-    }
-    y[15] = 8;
-  }
-  //displayXYW(x,y,w,N-1);
-  FastUN(x-3,y-3,w-3,S,4,4);
-  return(0);
-  */
-
-  for(i=1;i<=4;i++){
-    x[i] = 0.0;
-    y[i] = 8.0;
-  }
-  y[4] = 4.0;
-  SlowTN(x,y,w,S,4,1);
-
-}
 
 int FastSN(double *x, double *y, double *w, double *S, int N, int skip){
   int i,j;
@@ -362,7 +196,7 @@ int SlowSN(double *x, double *y, double *w, double *S, int N, int skip){
   //displayVector(y,N-1);
   //printf("x:\n");
   */
-  //displayVector(x,N-1);
+  displayVector(x,N-1);
   return(0);
 }
 
@@ -421,7 +255,7 @@ double **make_matrix(int NR, int NC){ // from lecture notes
 	for(n = 1; n <= NR; n++) M[n] = M[n-1] + NC+1;
 	for(i = 0; i <= NR; i++){
 		for(j = 0; j <= NC; j++){
-		  M[i][j] = (double)i;
+		  M[i][j] = 0.0;
 		}
 	}
 	return(M);
@@ -546,4 +380,368 @@ double signof(int n){
   } else {
     return(-1.0); // odd n case => sign is negative
   }
+}
+
+double timer(int T){ // from the lecture notes
+  static double then = 0.0;
+  double now, diff;
+
+  now=(double)clock()/(double)CLOCKS_PER_SEC;
+  diff=now-then;
+  if(T<0) then=now;
+
+  return(diff);
+}
+
+int defineQ4(double *rho,int N){
+  int i;
+  double dx;
+
+  dx = 1.0/(double)N;
+
+  for(i=1;i<N;i++){
+    if (i*dx < 0.25) {
+      rho[i] = 40.0;
+    } else if (i*dx == 0.25) {
+      rho[i] = 20.0;
+    } else {
+      rho[i] = 0.0;
+    }
+  }
+}
+
+int writeVector(double *V, int N, char *path){
+  int i;
+  FILE *writeFile;
+
+  writeFile = fopen(path,"w");
+  printf("File opened OK\n");
+
+  for(i=1;i<=N;i++){
+    fprintf(writeFile, "%g\n", V[i]);
+  }
+
+  fclose(writeFile);
+  printf("File written OK\n");
+  return(0);
+}
+
+int calcPsiBad(double *rho, double *psi, int N){
+  // use (4.3) to calculate psi from rho
+  int i;
+  double dx;
+
+  dx = 1.0/(double)N;
+  for(i=1;i<N-1;i++){
+    psi[i] = dx*dx*rho[i]/(N*(1.0-cos(((double)i*M_PI)/(double)N)));
+  }
+}
+
+int calcPsiGood(double *rho, double *psi, int N){
+  // use (4.6) to calculate psi from rho
+  int i;
+  double dx;
+
+  dx = 1.0/(double)N;
+  for(i=1;i<N;i++){
+    psi[i] = 2.0*rho[i]/(i*i*M_PI*M_PI*N);
+  }
+}
+
+int defineQ5(double **rho, int N){
+  int i,j;
+  double dx;
+
+  dx = 1.0/(double)N;
+
+  for(i = 0; i <= N; i++){
+    for(j = 0; j <= N; j++){
+      if((i*dx < 0.25) && (j*dx < 0.25)){
+	rho[i][j] = 100.0;
+      } else if (((i*dx == 0.25) && (j*dx < 0.25)) || ((i*dx < 0.25) && (j*dx == 0.25))){
+	rho[i][j] = 50;
+      } else if ((i*dx == 0.25) && (j*dx == 0.25)){
+	rho[i][j] = 25;
+      }
+    }
+  }
+}
+
+int calcPsiGood2D(double **rho, double ** psi, int N){
+  int i,j;
+  
+  for(i=1;i<N;i++){
+    for(j=1;j<N;j++){
+      psi[i][j] = (4.0/((double)N*(double)N))*(rho[i][j]/(((i*i)+(j*j))*M_PI*M_PI));
+    }
+  }
+}
+
+int writeMatrix(double **M, int len, char *path){
+  FILE *writeFile;
+  int i, j;
+  
+  writeFile = fopen(path, "w");
+  for(i = 0; i <= len; i++){
+    for(j = 0; j <= len; j++){
+      fprintf(writeFile, "%g,", M[i][j]);
+    }
+    fprintf(writeFile, "\n");
+  }
+  
+  fclose(writeFile);
+  return(0);
+}
+
+double ***make_tensor(int N1, int N2, int N3){
+	double ***T;
+	int i;
+
+	T = malloc((N1+1)*sizeof(double**));
+	for(i = 0; i <= N1; i++){
+		T[i] = (double **)make_matrix(N2, N3);
+	}
+	return(T);
+}
+
+int defineMQ(double ***rho, int N){
+  int i,j,k;
+  double dx;
+
+  dx = 1.0/(double)N;
+  
+  for(i=1;i<N;i++){
+    for(j=1;j<N;j++){
+      for(k=1;k<N;k++){
+	if(i*dx<0.25&&j*dx<0.25&&k*dx<0.25){
+	  rho[i][j][k] = 200.0;
+	} else if((i*dx==0.25&&j*dx<0.25&&k*dx<0.25)||(i*dx<0.25&&j*dx==0.25&&k*dx<0.25)||(i*dx<0.25&&j*dx<0.25&&k*dx==0.25)){
+	  rho[i][j][k] = 100.0;
+	} else if((i*dx==0.25&&j*dx==0.25&&k*dx<0.25)||(i*dx==0.25&&j*dx<0.25&&k*dx==0.25)||(i*dx<0.25&&j*dx==0.25&&k*dx==0.25)){
+	  rho[i][j][k] = 50.0;
+	} else if(i*dx==0.25&&j*dx==0.25&&k*dx==0.25){
+	  rho[i][j][k] = 25.0;
+	}
+      }
+    }
+  }
+  
+}
+
+int calcPsiGood3D(double ***rho, double ***psi, int N){
+  int i,j,k;
+
+  for(i=1;i<N;i++){
+    for(j=1;j<N;j++){
+      for(k=1;k<N;k++){
+	psi[i][j][k] = (8./(double)(N*N*N))*(rho[i][j][k]/(((i*i)+(j*j)+(k*k))*M_PI*M_PI*M_PI));
+      }
+    }
+  }
+}
+
+
+
+double amax(double *M, int len){
+	double max;
+	int i;
+
+	max = M[0];
+	for(i=1;i<=len;i++){
+		if(M[i] > max){
+			max = M[i];
+		} else {
+			continue;
+		}
+	}
+
+	return(max);
+}
+
+int argamax(double *M, int len){
+	double max;
+	int i, maxI;
+
+	max = M[1];
+	for(i=1;i<=len;i++){
+		if(M[i] > max){
+			maxI = i;
+			max = M[i];
+		} else {
+			continue;
+		}
+	}
+
+	return(maxI);
+}
+
+double amax2D(double **M, int len){
+  double max;
+  int i,j;
+
+  max = M[1][1];
+  for(i=1;i<=len;i++){
+    if(amax(M[i], len) > max){
+      max = amax(M[i], len);
+    } else {
+      continue;
+    }
+  }
+  return(max);
+}
+
+double *argamax2D(double **M, int len, double pos[2]){
+  double  max;
+  int i,j;
+
+  max = M[0][0];
+  for(i=1;i<=len;i++){
+    for(j=1;j<=len;j++){
+      if(M[i][j] > max){
+	max = M[i][j];
+	pos[0] = i;
+	pos[1] = j;
+      } else {
+	continue;
+      }
+    }
+  }
+  return(pos);
+}
+
+double amax3D(double ***M, int len){
+	double max;
+	int i, j;
+
+	max = M[1][1][1];
+	for(i=1;i<=len;i++){
+		for(j=1;j<=len;j++){
+			if(amax(M[i][j], len) > max){
+				max = amax(M[i][j], len);
+			} else {
+				continue;
+			}
+		}
+	}
+	return(max);
+}
+
+
+double *argamax3D(double ***M, int len, double pos[3]){
+	double max;
+	int i,j,k;
+
+	max = M[0][0][0];
+	for(i=0;i<=len;i++){
+		for(j=0;j<=len;j++){
+			for(k=0;k<=len;k++){
+				if(M[i][j][k] > max){
+					max = M[i][j][k];
+					pos[0] = i;
+					pos[1] = j;
+					pos[2] = k;
+				} else {
+					continue;
+				}
+			}
+		}
+	}
+	return(pos);
+}
+
+int xMax2D(double **M, int len){
+  int i,j, maxI;
+  double max;
+
+  max = M[0][0];
+  for(i=1;i<=len;i++){
+    for(j=1;j<=len;j++){
+      if(M[i][j] > max){
+	max = M[i][j];
+	maxI = i;
+      } else {
+	continue;
+      }
+    }
+  }
+  return(maxI);
+}
+
+int yMax2D(double **M, int len){
+  int i,j, maxJ;
+  double max;
+
+  max = M[0][0];
+  for(i=1;i<=len;i++){
+    for(j=1;j<=len;j++){
+      if(M[i][j] > max){
+	max = M[i][j];
+	maxJ = j;
+      } else {
+	continue;
+      }
+    }
+  }
+  return(maxJ);
+}
+
+int xMax3D(double ***M, int len){
+  double max;
+  int i,j,k, maxI;
+
+  max = M[1][1][1];
+  printf("test\n");
+  for(i=1;i<=len;i++){
+    for(j=1;j<=len;j++){
+      for(k=1;k<=len;k++){
+	if(M[i][j][k] > max){
+	  max = M[i][j][k];
+	  maxI = i;
+	} else {
+	  continue;
+	}
+      }
+    }
+  }
+  return(maxI);
+}
+
+int yMax3D(double ***M, int len){
+  double max;
+  int i,j,k, maxJ;
+
+  max = M[0][0][0];
+  for(i=0;i<=len;i++){
+    for(j=0;j<=len;j++){
+      for(k=0;k<=len;k++){
+	if(M[i][j][k] > max){
+	  max = M[i][j][k];
+	  maxJ = j;
+	} else {
+	  continue;
+	}
+      }
+    }
+  }
+  return(maxJ);
+}
+
+int zMax3D(double ***M, int len){
+  double max;
+  int i,j,k, maxK;
+
+  max = M[0][0][0];
+  for(i=0;i<=len;i++){
+    for(j=0;j<=len;j++){
+      for(k=0;k<=len;k++){
+	if(M[i][j][k] > max){
+	  max = M[i][j][k];
+	  maxK = k;
+	} else {
+	  continue;
+	}
+      }
+    }
+  }
+  return(maxK);
 }
