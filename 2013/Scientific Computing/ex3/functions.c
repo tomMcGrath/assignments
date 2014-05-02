@@ -17,11 +17,6 @@ int FastSN(double *x, double *y, double *w, double *S, int N, int skip){
     // recursive block
     // store s and a in the work array
 
-    //printf("data before processing:\n");
-    for(i=1;i<N;i++){
-      //printf("[%lf]\n", y[i*skip]);
-    }
-
     for(i=1;i<=N/2;i++){
       if(i!=N/2){
 	//printf("i = %d\n", i);
@@ -36,11 +31,6 @@ int FastSN(double *x, double *y, double *w, double *S, int N, int skip){
     w[(N-1)*skip] = y[(N/2)*skip];
     //printf("w[%d] = y[%d] = %lf\n", (N-1)*skip, (N/2)*skip, y[(N/2)*skip]);
 
-    //printf("work array after processing:\n");
-    for(i=1;i<N;i++){
-      //printf("[%lf]\n", w[i*skip]);
-    }
-
     //displayXYW(x,y,w,(N*skip)-1);
 
     // now call FastSN and FastTN recursively - need to ensure that the correct part of w is used so offset arrays by skip
@@ -52,11 +42,7 @@ int FastSN(double *x, double *y, double *w, double *S, int N, int skip){
     //displayXYW(x,y,w,(N*skip)-1);
   } else {
     // this happens if we can go no further - our initial N was not a power of 2
-    for(i=1;i<=N;i++){
-      for(j=1;j<=N;j++){
-	x[i*skip] = sin(i*j*M_PI/N)*y[j];
-      }
-    }
+    return(-1);
   }
 }
 
@@ -86,10 +72,7 @@ int FastTN(double *x, double *y, double *w, double *S, int N, int skip){
     // all this is debug printing
     //printf("Recursive step in FastTN with N = %d\n", N);
     //displayXYW(x+skip,y+skip,w+skip,(N*skip)-1);
-    //printf("work array elements\n");
-    for(i=1;i<=N;i++){
-      //printf("w[%d] = %lf\n", i*skip, w[i*skip]);
-    }
+
 
     // the work goes on here
     //printf("FastTN calling FastTN with N = %d\n", N/2);
@@ -108,18 +91,12 @@ int FastTN(double *x, double *y, double *w, double *S, int N, int skip){
       x[((N+1-i)*skip)] = w[(2*i-1)*skip] - w[2*i*skip];
     }
 
-    // testing assignment indices
-    for(i=1;i<=N/2;i++){
-      //printf("x[%d] = w[%d] + w[%d] = %lf\n", i*skip, ((2*i)-1)*skip, 2*i*skip, x[i*skip]);
-      //printf("x[%d] = w[%d] - w[%d] = %lf\n", ((N+1)*skip)-i*skip, ((2*i)-1)*skip, 2*i*skip, x[(N+1-i)*skip]);
-    }
-
     //printf("arrays after reassembly\n");
     //displayXYW(x+skip,y+skip,w+skip,(N*skip)-1);
   } else {
     // we can go no further - initial N was not a power of 2
     // just brute-force multiply
-    SlowTN(x,y,w,S,N,skip);
+    return(-1);
   }
   return(0);
 }
@@ -174,6 +151,7 @@ int FastUN(double *x, double *y, double *w, double *S, int N, int skip){
     }
   } else {
     // cannot calculate any further
+    return(-1);
   }
 }
 
@@ -182,6 +160,7 @@ int SlowSN(double *x, double *y, double *w, double *S, int N, int skip){
   double **SN;
 
   SN = make_matrix(N-1, N-1);
+
   for(i=1;i<=N-1;i++){
     for(j=1;j<=N-1;j++){
       SN[i][j] = sin(((double)i*(double)j*M_PI)/(double)N);
@@ -415,14 +394,12 @@ int writeVector(double *V, int N, char *path){
   FILE *writeFile;
 
   writeFile = fopen(path,"w");
-  printf("File opened OK\n");
 
   for(i=1;i<=N;i++){
     fprintf(writeFile, "%g\n", V[i]);
   }
 
   fclose(writeFile);
-  printf("File written OK\n");
   return(0);
 }
 
@@ -440,11 +417,10 @@ int calcPsiBad(double *rho, double *psi, int N){
 int calcPsiGood(double *rho, double *psi, int N){
   // use (4.6) to calculate psi from rho
   int i;
-  double dx;
 
-  dx = 1.0/(double)N;
   for(i=1;i<N;i++){
-    psi[i] = 2.0*rho[i]/(i*i*M_PI*M_PI*N);
+    //psi[i] = 2.0*rho[i]/(i*i*M_PI*M_PI*N);
+    psi[i] = (1./(i*M_PI))*(1./(i*M_PI))*rho[i]*2.0*(1./(double)N);
   }
 }
 
@@ -534,7 +510,7 @@ int calcPsiGood3D(double ***rho, double ***psi, int N){
   for(i=1;i<N;i++){
     for(j=1;j<N;j++){
       for(k=1;k<N;k++){
-	psi[i][j][k] = (8./(double)(N*N*N))*(rho[i][j][k]/(((i*i)+(j*j)+(k*k))*M_PI*M_PI*M_PI));
+	psi[i][j][k] = (8./((double)N*(double)N*(double)N))*(rho[i][j][k]/(((i*i)+(j*j)+(k*k))*M_PI*M_PI*M_PI));
       }
     }
   }
@@ -689,11 +665,10 @@ int xMax3D(double ***M, int len){
   double max;
   int i,j,k, maxI;
 
-  max = M[1][1][1];
-  printf("test\n");
-  for(i=1;i<=len;i++){
-    for(j=1;j<=len;j++){
-      for(k=1;k<=len;k++){
+  max = M[0][0][0];
+  for(i=0;i<=len;i++){
+    for(j=0;j<=len;j++){
+      for(k=0;k<=len;k++){
 	if(M[i][j][k] > max){
 	  max = M[i][j][k];
 	  maxI = i;

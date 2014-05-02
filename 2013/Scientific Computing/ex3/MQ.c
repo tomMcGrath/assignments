@@ -6,23 +6,32 @@
 
 int main(void){
   int i,j,k,N, NMIN, NMAX;
+  double time, TMAX, xMax, yMax, zMax, psiMax;
+  double dx;
   double ***rho, ***psi;
   double *w, *S, *temp1, *temp2;
-  double time, psiMax, TMAX, xMax, yMax, zMax;
-  double dx;
+  //double **output;
 
   NMIN = 8;
-  NMAX = 256;
+  NMAX = 512;
   TMAX = 600;
 
   // initialise tensors
+  //output = make_matrix(NMAX,NMAX);
   rho = make_tensor(NMAX,NMAX,NMAX);
   psi = make_tensor(NMAX,NMAX,NMAX);
   temp1 = (double*)malloc(NMAX*sizeof(double));
   temp2 = (double*)malloc(NMAX*sizeof(double));
   w = (double*)malloc(NMAX*sizeof(double));
   S = (double*)malloc(((NMAX/2)-1)*sizeof(double));
-  S = SFactors(N);
+  S = SFactors(NMAX);
+
+  printf("Name: <Tom McGrath>\n");
+  printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+  printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+  printf("Course Code: <M5SC>\n");
+  printf("Time: %s\n",__TIME__); 
+  printf("Date: %s\n",__DATE__);   
 
   // print table header
   printf("%10s\t%10s\t%10s\t%10s\t%10s\t%10s\n", "N", "Psi Max", "X Max", "Y Max", "Z Max", "Time");
@@ -129,17 +138,26 @@ int main(void){
       }
     }
 
-    // RESULTS CALCULATING CODE NEEDS FIXING
-    //psiMax = amax3D(psi, N-1);
-    //xMax = (double)xMax3D(psi, N-1);
-    //yMax = yMax3D(psi, N-1);
-    //zMax = zMax3D(psi, N-1);
+    time = timer(1);
+    psiMax = amax3D(psi, N-1);
+    xMax = dx*xMax3D(psi, N-1);
+    yMax = dx*yMax3D(psi, N-1);
+    zMax = dx*zMax3D(psi, N-1);
 
-    //time = timer(1);
-    //printf("%10d\t%10.8g\t%10.8g\t%10.8g\t%10.8g\t%10.8g\n", N, psiMax, xMax, yMax, zMax, time);
+    printf("%10d\t%10.8g\t%10.8g\t%10.8g\t%10.8g\t%10.8g\n", N, psiMax, xMax, yMax, zMax, time);
 
     if(time > TMAX){
       break;
     }
+    
+    /*
+    for(i=1;i<N;i++){
+      for(j=1;j<N;j++){
+	output[i][j] = psi[i][j][N/4];
+      }
+    }
+    writeMatrix(output, N, "MQii.txt");
+    */
+    
   }
 }

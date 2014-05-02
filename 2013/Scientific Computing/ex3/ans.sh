@@ -1,0 +1,33 @@
+#!/bin/bash
+
+echo "Compiling with no flags"
+make
+
+echo "Answering Q3"
+./q3 > q3_noopt.txt
+
+echo "Answering Q4"
+./q4 > q4_noopt.txt
+
+echo "Answering Q5"
+./q5 > q5_noopt.txt
+
+echo "Answering MQ"
+./MQ > MQ_noopt.txt
+
+echo "Compiling with max opt flags"
+make maxopt
+
+echo "Answering Q3"
+./q3 > q3_opt.txt
+
+echo "Answering Q4"
+./q4 > q4_opt.txt
+
+echo "Answering Q5"
+./q5 > q5_opt.txt
+
+echo "Answering MQ"
+./MQ > MQ_opt.txt
+
+echo "All questions answered, have a nice day"

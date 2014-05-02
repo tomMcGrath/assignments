@@ -23,10 +23,17 @@ int main(void){
   temp2 = (double*)malloc(NMAX*sizeof(double));
   w = (double*)malloc(NMAX*sizeof(double));
   S = (double*)malloc(((NMAX/2)-1)*sizeof(double));
-  S = SFactors(N);
+  S = SFactors(NMAX);
+
+  printf("Name: <Tom McGrath>\n");
+  printf("CID: <00898098>, LIBRARY NO: <0246656362>\n");
+  printf("Email Address: <t.mcgrath13@imperial.ac.uk>\n");
+  printf("Course Code: <M5SC>\n");
+  printf("Time: %s\n",__TIME__); 
+  printf("Date: %s\n",__DATE__); 
 
   // print table header
-  printf("%10s\t%10s\t%10s\t%10s\t\t%10s\n", "N", "Psi Max", "X Max", "Y Max", "Time");
+  printf("%10s\t%10s\t%10s\t%10s\t%10s\n", "N", "Psi Max", "X Max", "Y Max", "Time");
 
   for(N=NMIN;N<=NMAX;N*=2){
     // clear arrays
@@ -99,6 +106,7 @@ int main(void){
     if(time > TMAX){
       break;
     }
+    //writeMatrix(psi, N, "q5.txt");
   }
 }
 

@@ -32,3 +32,5 @@ int yMax2d(double **M, int len);
 int xMax3D(double ***M, int len);
 int yMax3D(double ***M, int len);
 int zMax3D(double ***M, int len);
+int defineMQ(double ***rho, int N);
+int calcPsiGood3D(double ***rho, double ***psi, int N);
